@@ -20,7 +20,7 @@ Sistem analitik *end-to-end* berbasis arsitektur Medallion Lakehouse di Microsof
 
 | Anggota | Peran |
 | :--- | :--- |
-| Jimly Syahbatin | Ingestion & partisi data ke ADLS Gen2, konfigurasi RBAC/Managed Identity, FinOps (Cost Alert & Auto-kill Spark Pool via Livy API), serta pengelolaan GitHub & CI/CD. |
+| Jimly | Ingestion & partisi data ke ADLS Gen2, konfigurasi RBAC/Managed Identity, FinOps (Cost Alert & Auto-kill Spark Pool via Livy API), serta pengelolaan GitHub & CI/CD. |
 | Najma | Pembersihan data & transformasi PySpark, optimasi Delta Lake |
 | Adel | Feature engineering (lag features, profil waktu), pelatihan & evaluasi model, tracking MLflow, dan deployment REST API (FastAPI). |
 | Darrel | Integrasi Power BI dengan Synapse Serverless SQL
