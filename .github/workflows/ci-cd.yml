@@ -61,7 +61,7 @@ jobs:
         run: |
           az storage blob upload-batch \
             --account-name adls1tcba \
-            --destination datacuca \
+            --destination lakehouse \
             --destination-path scripts/ \
             --source ./notebook \
             --overwrite
