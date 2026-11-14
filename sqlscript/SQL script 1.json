@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "-- 1. Database dan sumber data\n\nUSE synapseprojek;\nGO\n\nIF NOT EXISTS (\n    SELECT 1 FROM sys.symmetric_keys\n    WHERE name = N'##MS_DatabaseMasterKey##'\n)\n    CREATE MASTER KEY;\nGO\n\nIF NOT EXISTS (\n    SELECT 1 FROM sys.database_scoped_credentials\n    WHERE name = N'syn_asprak_identity'\n)\n    CREATE DATABASE SCOPED CREDENTIAL syn_asprak_identity\n    WITH IDENTITY = 'Managed Identity';\nGO\n\nIF NOT EXISTS (\n    SELECT 1 FROM sys.external_data_sources\n    WHERE name = N'ds_datacuaca_curated'\n)\n    CREATE EXTERNAL DATA SOURCE ds_datacuaca_curated\n    WITH (\n        LOCATION = 'https://adls1tcba.dfs.core.windows.net/curated',\n        CREDENTIAL = syn_asprak_identity\n    );\nGO\n\nSELECT TOP (10) *\nFROM OPENROWSET(\n    BULK 'pertemuan8/C_delta_kota_bulan',\n    DATA_SOURCE = 'ds_datacuaca_curated',\n    FORMAT = 'DELTA'\n) AS r;\nGO\n\n-- 2. View polusi dan cuaca\n\nCREATE OR ALTER VIEW dbo.vw_polusi_cuaca AS\nSELECT *\nFROM OPENROWSET(\n    BULK 'pertemuan8/C_delta_kota_bulan',\n    DATA_SOURCE = 'ds_datacuaca_curated',\n    FORMAT = 'DELTA'\n)\nWITH (\n    kota                 VARCHAR(20),\n    tanggal              DATE,\n    waktu                DATETIME2,\n    jam                  INT,\n    bulan                VARCHAR(7),\n    pm10_ug_m3           FLOAT,\n    pm2_5_ug_m3          FLOAT,\n    no2_ug_m3            FLOAT,\n    so2_ug_m3            FLOAT,\n    o3_ug_m3             FLOAT,\n    co_ug_m3             FLOAT,\n    temperature_2m       FLOAT,\n    relative_humidity_2m FLOAT,\n    precipitation        FLOAT,\n    wind_speed_10m       FLOAT,\n    kategori_pm25        VARCHAR(30)\n) AS r;\nGO\n\nSELECT name FROM sys.views;\n\nSELECT TOP (10) * FROM dbo.vw_polusi_cuaca;\nGO\n\n-- 3. View koordinat kota\n\nCREATE OR ALTER VIEW dbo.vw_kota AS\nSELECT *\nFROM (VALUES\n    ('bandung',   'Bandung',   -6.9175, 107.6191),\n    ('denpasar',  'Denpasar',  -8.6705, 115.2126),\n    ('jakarta',   'Jakarta',   -6.2088, 106.8456),\n    ('semarang',  'Semarang',  -6.9667, 110.4167),\n    ('surabaya',  'Surabaya',  -7.2575, 112.7521),\n    ('surakarta', 'Surakarta', -7.5755, 110.8243)\n) AS k(kota, nama_kota, latitude, longitude);\nGO\n\nSELECT * FROM dbo.vw_kota;\nGO\n\n-- 4. Uji partition pruning\n\nSELECT COUNT(*) AS total_baris\nFROM dbo.vw_polusi_cuaca;\n\nSELECT COUNT(*) AS baris_jakarta_maret\nFROM dbo.vw_polusi_cuaca\nWHERE kota = 'jakarta'\n  AND tanggal BETWEEN '2026-03-01' AND '2026-03-31';",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "synapseprojek",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

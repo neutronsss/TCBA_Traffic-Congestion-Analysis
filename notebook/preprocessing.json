@@ -1,0 +1,5013 @@
+{
+	"name": "preprocessing",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "kelompoksyanpse",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "de765bd7-b2cf-4fe6-90b7-5ca0628b71d8"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1",
+				"state": {
+					"0e87979f-6eda-475b-a72c-02649eae8332": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": {
+											"coordinates": {
+												"coordinate": [
+													{
+														"latitude": 34.04668050560837,
+														"longitude": -118.24854529887637
+													},
+													{
+														"latitude": 34.047070749409606,
+														"longitude": -118.2481697896142
+													},
+													{
+														"latitude": 34.04717943952389,
+														"longitude": -118.24806518346259
+													},
+													{
+														"latitude": 34.04757634824674,
+														"longitude": -118.24768162757337
+													},
+													{
+														"latitude": 34.047744000821915,
+														"longitude": -118.24754081160006
+													},
+													{
+														"latitude": 34.04812354447022,
+														"longitude": -118.24721894651819
+													},
+													{
+														"latitude": 34.0483086278106,
+														"longitude": -118.24702046305104
+													},
+													{
+														"latitude": 34.04843870677956,
+														"longitude": -118.24689574033182
+													},
+													{
+														"latitude": 34.04854329762637,
+														"longitude": -118.24679783970277
+													},
+													{
+														"latitude": 34.048709628753834,
+														"longitude": -118.24664093047534
+													},
+													{
+														"latitude": 34.0488504022757,
+														"longitude": -118.24650682002456
+													},
+													{
+														"latitude": 34.04896304870451,
+														"longitude": -118.24640087276846
+													},
+													{
+														"latitude": 34.049050276662484,
+														"longitude": -118.2463190653935
+													},
+													{
+														"latitude": 34.049327863762755,
+														"longitude": -118.24605755001448
+													},
+													{
+														"latitude": 34.04935737947554,
+														"longitude": -118.24602938681981
+													},
+													{
+														"latitude": 34.04952363955743,
+														"longitude": -118.24586174875634
+													},
+													{
+														"latitude": 34.04971948434846,
+														"longitude": -118.24568740517033
+													},
+													{
+														"latitude": 34.04985761715775,
+														"longitude": -118.24556268245111
+													},
+													{
+														"latitude": 34.04996484528694,
+														"longitude": -118.24546478182205
+													},
+													{
+														"latitude": 34.0500386687193,
+														"longitude": -118.24539772659665
+													},
+													{
+														"latitude": 34.05010971416317,
+														"longitude": -118.24533201247579
+													},
+													{
+														"latitude": 34.05018749600798,
+														"longitude": -118.24526227504137
+													},
+													{
+														"latitude": 34.05039674270604,
+														"longitude": -118.24507049709678
+													},
+													{
+														"latitude": 34.050454384420625,
+														"longitude": -118.24501819402096
+													},
+													{
+														"latitude": 34.05050001162957,
+														"longitude": -118.24497796088573
+													},
+													{
+														"latitude": 34.050627378776895,
+														"longitude": -118.24486128479356
+													},
+													{
+														"latitude": 34.050668977929185,
+														"longitude": -118.24482373386734
+													},
+													{
+														"latitude": 34.05073064741952,
+														"longitude": -118.24476740747801
+													},
+													{
+														"latitude": 34.05083662438934,
+														"longitude": -118.24466950684895
+													},
+													{
+														"latitude": 34.051027049253925,
+														"longitude": -118.24449650436745
+													},
+													{
+														"latitude": 34.05106725926362,
+														"longitude": -118.24445761233673
+													},
+													{
+														"latitude": 34.05115712405228,
+														"longitude": -118.24437178164823
+													},
+													{
+														"latitude": 34.0516815186126,
+														"longitude": -118.24387557298036
+													},
+													{
+														"latitude": 34.051790133369664,
+														"longitude": -118.24377230793326
+													},
+													{
+														"latitude": 34.051997987181124,
+														"longitude": -118.2435912588247
+													},
+													{
+														"latitude": 34.05217097838773,
+														"longitude": -118.24344507843335
+													},
+													{
+														"latitude": 34.05223938308302,
+														"longitude": -118.24337668210346
+													},
+													{
+														"latitude": 34.05234133028278,
+														"longitude": -118.24328280478792
+													},
+													{
+														"latitude": 34.05243383267674,
+														"longitude": -118.24320233851745
+													},
+													{
+														"latitude": 34.05267925520583,
+														"longitude": -118.24297703296016
+													},
+													{
+														"latitude": 34.052854953410865,
+														"longitude": -118.24280537158316
+													},
+													{
+														"latitude": 34.053655590937026,
+														"longitude": -118.2420691052084
+													},
+													{
+														"latitude": 34.053748161342035,
+														"longitude": -118.24197925120637
+													},
+													{
+														"latitude": 34.05383802328902,
+														"longitude": -118.24189073830888
+													},
+													{
+														"latitude": 34.0540901084586,
+														"longitude": -118.24165202170649
+													},
+													{
+														"latitude": 34.05416253940311,
+														"longitude": -118.2415849664811
+													},
+													{
+														"latitude": 34.05460510987991,
+														"longitude": -118.24117458850174
+													},
+													{
+														"latitude": 34.05477809576648,
+														"longitude": -118.24102572590137
+													},
+													{
+														"latitude": 34.05508253895841,
+														"longitude": -118.24076421052236
+													},
+													{
+														"latitude": 34.0552582321825,
+														"longitude": -118.24060596019044
+													},
+													{
+														"latitude": 34.055353439702316,
+														"longitude": -118.24052012950195
+													},
+													{
+														"latitude": 34.05542184182965,
+														"longitude": -118.24044770985853
+													}
+												]
+											},
+											"freeFlowTravelTime": 152,
+											"frc": "FRC4",
+											"freeFlowSpeed": 29,
+											"roadClosure": false,
+											"confidence": 0.986356,
+											"currentTravelTime": 220,
+											"@version": "4",
+											"currentSpeed": 20
+										},
+										"1": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-04T06_19_01.6169082Z.json"
+									},
+									{
+										"0": {
+											"coordinates": {
+												"coordinate": [
+													{
+														"latitude": 34.04668050560837,
+														"longitude": -118.24854529887637
+													},
+													{
+														"latitude": 34.047070749409606,
+														"longitude": -118.2481697896142
+													},
+													{
+														"latitude": 34.04717943952389,
+														"longitude": -118.24806518346259
+													},
+													{
+														"latitude": 34.04757634824674,
+														"longitude": -118.24768162757337
+													},
+													{
+														"latitude": 34.047744000821915,
+														"longitude": -118.24754081160006
+													},
+													{
+														"latitude": 34.04812354447022,
+														"longitude": -118.24721894651819
+													},
+													{
+														"latitude": 34.0483086278106,
+														"longitude": -118.24702046305104
+													},
+													{
+														"latitude": 34.04843870677956,
+														"longitude": -118.24689574033182
+													},
+													{
+														"latitude": 34.04854329762637,
+														"longitude": -118.24679783970277
+													},
+													{
+														"latitude": 34.048709628753834,
+														"longitude": -118.24664093047534
+													},
+													{
+														"latitude": 34.0488504022757,
+														"longitude": -118.24650682002456
+													},
+													{
+														"latitude": 34.04896304870451,
+														"longitude": -118.24640087276846
+													},
+													{
+														"latitude": 34.049050276662484,
+														"longitude": -118.2463190653935
+													},
+													{
+														"latitude": 34.049327863762755,
+														"longitude": -118.24605755001448
+													},
+													{
+														"latitude": 34.04935737947554,
+														"longitude": -118.24602938681981
+													},
+													{
+														"latitude": 34.04952363955743,
+														"longitude": -118.24586174875634
+													},
+													{
+														"latitude": 34.04971948434846,
+														"longitude": -118.24568740517033
+													},
+													{
+														"latitude": 34.04985761715775,
+														"longitude": -118.24556268245111
+													},
+													{
+														"latitude": 34.04996484528694,
+														"longitude": -118.24546478182205
+													},
+													{
+														"latitude": 34.0500386687193,
+														"longitude": -118.24539772659665
+													},
+													{
+														"latitude": 34.05010971416317,
+														"longitude": -118.24533201247579
+													},
+													{
+														"latitude": 34.05018749600798,
+														"longitude": -118.24526227504137
+													},
+													{
+														"latitude": 34.05039674270604,
+														"longitude": -118.24507049709678
+													},
+													{
+														"latitude": 34.050454384420625,
+														"longitude": -118.24501819402096
+													},
+													{
+														"latitude": 34.05050001162957,
+														"longitude": -118.24497796088573
+													},
+													{
+														"latitude": 34.050627378776895,
+														"longitude": -118.24486128479356
+													},
+													{
+														"latitude": 34.050668977929185,
+														"longitude": -118.24482373386734
+													},
+													{
+														"latitude": 34.05073064741952,
+														"longitude": -118.24476740747801
+													},
+													{
+														"latitude": 34.05083662438934,
+														"longitude": -118.24466950684895
+													},
+													{
+														"latitude": 34.051027049253925,
+														"longitude": -118.24449650436745
+													},
+													{
+														"latitude": 34.05106725926362,
+														"longitude": -118.24445761233673
+													},
+													{
+														"latitude": 34.05115712405228,
+														"longitude": -118.24437178164823
+													},
+													{
+														"latitude": 34.0516815186126,
+														"longitude": -118.24387557298036
+													},
+													{
+														"latitude": 34.051790133369664,
+														"longitude": -118.24377230793326
+													},
+													{
+														"latitude": 34.051997987181124,
+														"longitude": -118.2435912588247
+													},
+													{
+														"latitude": 34.05217097838773,
+														"longitude": -118.24344507843335
+													},
+													{
+														"latitude": 34.05223938308302,
+														"longitude": -118.24337668210346
+													},
+													{
+														"latitude": 34.05234133028278,
+														"longitude": -118.24328280478792
+													},
+													{
+														"latitude": 34.05243383267674,
+														"longitude": -118.24320233851745
+													},
+													{
+														"latitude": 34.05267925520583,
+														"longitude": -118.24297703296016
+													},
+													{
+														"latitude": 34.052854953410865,
+														"longitude": -118.24280537158316
+													},
+													{
+														"latitude": 34.053655590937026,
+														"longitude": -118.2420691052084
+													},
+													{
+														"latitude": 34.053748161342035,
+														"longitude": -118.24197925120637
+													},
+													{
+														"latitude": 34.05383802328902,
+														"longitude": -118.24189073830888
+													},
+													{
+														"latitude": 34.0540901084586,
+														"longitude": -118.24165202170649
+													},
+													{
+														"latitude": 34.05416253940311,
+														"longitude": -118.2415849664811
+													},
+													{
+														"latitude": 34.05460510987991,
+														"longitude": -118.24117458850174
+													},
+													{
+														"latitude": 34.05477809576648,
+														"longitude": -118.24102572590137
+													},
+													{
+														"latitude": 34.05508253895841,
+														"longitude": -118.24076421052236
+													},
+													{
+														"latitude": 34.0552582321825,
+														"longitude": -118.24060596019044
+													},
+													{
+														"latitude": 34.055353439702316,
+														"longitude": -118.24052012950195
+													},
+													{
+														"latitude": 34.05542184182965,
+														"longitude": -118.24044770985853
+													}
+												]
+											},
+											"freeFlowTravelTime": 152,
+											"frc": "FRC4",
+											"freeFlowSpeed": 29,
+											"roadClosure": false,
+											"confidence": 1,
+											"currentTravelTime": 152,
+											"@version": "4",
+											"currentSpeed": 29
+										},
+										"1": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T13_48_57.9712809Z.json"
+									},
+									{
+										"0": {
+											"coordinates": {
+												"coordinate": [
+													{
+														"latitude": 34.04668050560837,
+														"longitude": -118.24854529887637
+													},
+													{
+														"latitude": 34.047070749409606,
+														"longitude": -118.2481697896142
+													},
+													{
+														"latitude": 34.04717943952389,
+														"longitude": -118.24806518346259
+													},
+													{
+														"latitude": 34.04757634824674,
+														"longitude": -118.24768162757337
+													},
+													{
+														"latitude": 34.047744000821915,
+														"longitude": -118.24754081160006
+													},
+													{
+														"latitude": 34.04812354447022,
+														"longitude": -118.24721894651819
+													},
+													{
+														"latitude": 34.0483086278106,
+														"longitude": -118.24702046305104
+													},
+													{
+														"latitude": 34.04843870677956,
+														"longitude": -118.24689574033182
+													},
+													{
+														"latitude": 34.04854329762637,
+														"longitude": -118.24679783970277
+													},
+													{
+														"latitude": 34.048709628753834,
+														"longitude": -118.24664093047534
+													},
+													{
+														"latitude": 34.0488504022757,
+														"longitude": -118.24650682002456
+													},
+													{
+														"latitude": 34.04896304870451,
+														"longitude": -118.24640087276846
+													},
+													{
+														"latitude": 34.049050276662484,
+														"longitude": -118.2463190653935
+													},
+													{
+														"latitude": 34.049327863762755,
+														"longitude": -118.24605755001448
+													},
+													{
+														"latitude": 34.04935737947554,
+														"longitude": -118.24602938681981
+													},
+													{
+														"latitude": 34.04952363955743,
+														"longitude": -118.24586174875634
+													},
+													{
+														"latitude": 34.04971948434846,
+														"longitude": -118.24568740517033
+													},
+													{
+														"latitude": 34.04985761715775,
+														"longitude": -118.24556268245111
+													},
+													{
+														"latitude": 34.04996484528694,
+														"longitude": -118.24546478182205
+													},
+													{
+														"latitude": 34.0500386687193,
+														"longitude": -118.24539772659665
+													},
+													{
+														"latitude": 34.05010971416317,
+														"longitude": -118.24533201247579
+													},
+													{
+														"latitude": 34.05018749600798,
+														"longitude": -118.24526227504137
+													},
+													{
+														"latitude": 34.05039674270604,
+														"longitude": -118.24507049709678
+													},
+													{
+														"latitude": 34.050454384420625,
+														"longitude": -118.24501819402096
+													},
+													{
+														"latitude": 34.05050001162957,
+														"longitude": -118.24497796088573
+													},
+													{
+														"latitude": 34.050627378776895,
+														"longitude": -118.24486128479356
+													},
+													{
+														"latitude": 34.050668977929185,
+														"longitude": -118.24482373386734
+													},
+													{
+														"latitude": 34.05073064741952,
+														"longitude": -118.24476740747801
+													},
+													{
+														"latitude": 34.05083662438934,
+														"longitude": -118.24466950684895
+													},
+													{
+														"latitude": 34.051027049253925,
+														"longitude": -118.24449650436745
+													},
+													{
+														"latitude": 34.05106725926362,
+														"longitude": -118.24445761233673
+													},
+													{
+														"latitude": 34.05115712405228,
+														"longitude": -118.24437178164823
+													},
+													{
+														"latitude": 34.0516815186126,
+														"longitude": -118.24387557298036
+													},
+													{
+														"latitude": 34.051790133369664,
+														"longitude": -118.24377230793326
+													},
+													{
+														"latitude": 34.051997987181124,
+														"longitude": -118.2435912588247
+													},
+													{
+														"latitude": 34.05217097838773,
+														"longitude": -118.24344507843335
+													},
+													{
+														"latitude": 34.05223938308302,
+														"longitude": -118.24337668210346
+													},
+													{
+														"latitude": 34.05234133028278,
+														"longitude": -118.24328280478792
+													},
+													{
+														"latitude": 34.05243383267674,
+														"longitude": -118.24320233851745
+													},
+													{
+														"latitude": 34.05267925520583,
+														"longitude": -118.24297703296016
+													},
+													{
+														"latitude": 34.052854953410865,
+														"longitude": -118.24280537158316
+													},
+													{
+														"latitude": 34.053655590937026,
+														"longitude": -118.2420691052084
+													},
+													{
+														"latitude": 34.053748161342035,
+														"longitude": -118.24197925120637
+													},
+													{
+														"latitude": 34.05383802328902,
+														"longitude": -118.24189073830888
+													},
+													{
+														"latitude": 34.0540901084586,
+														"longitude": -118.24165202170649
+													},
+													{
+														"latitude": 34.05416253940311,
+														"longitude": -118.2415849664811
+													},
+													{
+														"latitude": 34.05460510987991,
+														"longitude": -118.24117458850174
+													},
+													{
+														"latitude": 34.05477809576648,
+														"longitude": -118.24102572590137
+													},
+													{
+														"latitude": 34.05508253895841,
+														"longitude": -118.24076421052236
+													},
+													{
+														"latitude": 34.0552582321825,
+														"longitude": -118.24060596019044
+													},
+													{
+														"latitude": 34.055353439702316,
+														"longitude": -118.24052012950195
+													},
+													{
+														"latitude": 34.05542184182965,
+														"longitude": -118.24044770985853
+													}
+												]
+											},
+											"freeFlowTravelTime": 152,
+											"frc": "FRC4",
+											"freeFlowSpeed": 29,
+											"roadClosure": false,
+											"confidence": 1,
+											"currentTravelTime": 232,
+											"@version": "4",
+											"currentSpeed": 19
+										},
+										"1": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T18_19_02.2532918Z.json"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "flowSegmentData",
+										"type": "StructType(StructField(@version,StringType,true),StructField(confidence,DoubleType,true),StructField(coordinates,StructType(StructField(coordinate,ArrayType(StructType(StructField(latitude,DoubleType,true),StructField(longitude,DoubleType,true)),true),true)),true),StructField(currentSpeed,LongType,true),StructField(currentTravelTime,LongType,true),StructField(frc,StringType,true),StructField(freeFlowSpeed,LongType,true),StructField(freeFlowTravelTime,LongType,true),StructField(roadClosure,BooleanType,true))"
+									},
+									{
+										"key": "1",
+										"name": "source_file",
+										"type": "string"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "count",
+									"categoryFieldKeys": [
+										"1"
+									],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"78cf1d35-7c2a-4728-8dbc-576c599dede2": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "0",
+										"1": "0"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "flowSegmentData",
+										"type": "bigint"
+									},
+									{
+										"key": "1",
+										"name": "source_file",
+										"type": "bigint"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"1"
+									],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"89e3d05f-d18f-4c1b-887f-76e83267db82": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "FRC4",
+										"1": "20",
+										"2": "29",
+										"3": "220",
+										"4": "152",
+										"5": "0.986356",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-04T06_19_01.6169082Z.json"
+									},
+									{
+										"0": "FRC4",
+										"1": "29",
+										"2": "29",
+										"3": "152",
+										"4": "152",
+										"5": "1.0",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T13_48_57.9712809Z.json"
+									},
+									{
+										"0": "FRC4",
+										"1": "19",
+										"2": "29",
+										"3": "232",
+										"4": "152",
+										"5": "1.0",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T18_19_02.2532918Z.json"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "frc",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "current_speed",
+										"type": "bigint"
+									},
+									{
+										"key": "2",
+										"name": "free_flow_speed",
+										"type": "bigint"
+									},
+									{
+										"key": "3",
+										"name": "current_travel_time",
+										"type": "bigint"
+									},
+									{
+										"key": "4",
+										"name": "free_flow_travel_time",
+										"type": "bigint"
+									},
+									{
+										"key": "5",
+										"name": "confidence",
+										"type": "double"
+									},
+									{
+										"key": "6",
+										"name": "road_closure",
+										"type": "boolean"
+									},
+									{
+										"key": "7",
+										"name": "coordinates",
+										"type": "ArrayType(StructType(StructField(latitude,DoubleType,true),StructField(longitude,DoubleType,true)),true)"
+									},
+									{
+										"key": "8",
+										"name": "version",
+										"type": "string"
+									},
+									{
+										"key": "9",
+										"name": "source_file",
+										"type": "string"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"32643b9e-382f-4cb3-a829-0a28d67a7d2c": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "FRC4",
+										"1": "20.0",
+										"2": "29.0",
+										"3": "220.0",
+										"4": "152.0",
+										"5": "0.986356",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-04T06_19_01.6169082Z.json",
+										"10": "2026-11-04 06:19:01"
+									},
+									{
+										"0": "FRC4",
+										"1": "29.0",
+										"2": "29.0",
+										"3": "152.0",
+										"4": "152.0",
+										"5": "1.0",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T13_48_57.9712809Z.json",
+										"10": "2026-11-03 13:48:57"
+									},
+									{
+										"0": "FRC4",
+										"1": "19.0",
+										"2": "29.0",
+										"3": "232.0",
+										"4": "152.0",
+										"5": "1.0",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T18_19_02.2532918Z.json",
+										"10": "2026-11-03 18:19:02"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "frc",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "current_speed",
+										"type": "double"
+									},
+									{
+										"key": "2",
+										"name": "free_flow_speed",
+										"type": "double"
+									},
+									{
+										"key": "3",
+										"name": "current_travel_time",
+										"type": "double"
+									},
+									{
+										"key": "4",
+										"name": "free_flow_travel_time",
+										"type": "double"
+									},
+									{
+										"key": "5",
+										"name": "confidence",
+										"type": "double"
+									},
+									{
+										"key": "6",
+										"name": "road_closure",
+										"type": "boolean"
+									},
+									{
+										"key": "7",
+										"name": "coordinates",
+										"type": "ArrayType(StructType(StructField(latitude,DoubleType,true),StructField(longitude,DoubleType,true)),true)"
+									},
+									{
+										"key": "8",
+										"name": "version",
+										"type": "string"
+									},
+									{
+										"key": "9",
+										"name": "source_file",
+										"type": "string"
+									},
+									{
+										"key": "10",
+										"name": "observation_time",
+										"type": "timestamp"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"55b86d58-3a68-4ba1-aa18-8e9cb1d5abca": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "FRC4",
+										"1": "20.0",
+										"2": "29.0",
+										"3": "220.0",
+										"4": "152.0",
+										"5": "0.986356",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-04T06_19_01.6169082Z.json",
+										"10": "2026-11-04 06:19:01"
+									},
+									{
+										"0": "FRC4",
+										"1": "19.0",
+										"2": "29.0",
+										"3": "232.0",
+										"4": "152.0",
+										"5": "1.0",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T18_19_02.2532918Z.json",
+										"10": "2026-11-03 18:19:02"
+									},
+									{
+										"0": "FRC4",
+										"1": "29.0",
+										"2": "29.0",
+										"3": "152.0",
+										"4": "152.0",
+										"5": "1.0",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T13_48_57.9712809Z.json",
+										"10": "2026-11-03 13:48:57"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "frc",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "current_speed",
+										"type": "double"
+									},
+									{
+										"key": "2",
+										"name": "free_flow_speed",
+										"type": "double"
+									},
+									{
+										"key": "3",
+										"name": "current_travel_time",
+										"type": "double"
+									},
+									{
+										"key": "4",
+										"name": "free_flow_travel_time",
+										"type": "double"
+									},
+									{
+										"key": "5",
+										"name": "confidence",
+										"type": "double"
+									},
+									{
+										"key": "6",
+										"name": "road_closure",
+										"type": "boolean"
+									},
+									{
+										"key": "7",
+										"name": "coordinates",
+										"type": "ArrayType(StructType(StructField(latitude,DoubleType,true),StructField(longitude,DoubleType,true)),true)"
+									},
+									{
+										"key": "8",
+										"name": "version",
+										"type": "string"
+									},
+									{
+										"key": "9",
+										"name": "source_file",
+										"type": "string"
+									},
+									{
+										"key": "10",
+										"name": "observation_time",
+										"type": "timestamp"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"18b75fa8-ffb7-409c-8d52-e2e660503a02": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "FRC4",
+										"1": "29.0",
+										"2": "29.0",
+										"3": "152.0",
+										"4": "152.0",
+										"5": "1.0",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T13_48_57.9712809Z.json",
+										"10": "2026-11-03 13:48:57",
+										"11": "2026-11-06 09:41:39.120536",
+										"12": "TomTom"
+									},
+									{
+										"0": "FRC4",
+										"1": "20.0",
+										"2": "29.0",
+										"3": "220.0",
+										"4": "152.0",
+										"5": "0.986356",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-04T06_19_01.6169082Z.json",
+										"10": "2026-11-04 06:19:01",
+										"11": "2026-11-06 09:41:39.120536",
+										"12": "TomTom"
+									},
+									{
+										"0": "FRC4",
+										"1": "19.0",
+										"2": "29.0",
+										"3": "232.0",
+										"4": "152.0",
+										"5": "1.0",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T18_19_02.2532918Z.json",
+										"10": "2026-11-03 18:19:02",
+										"11": "2026-11-06 09:41:39.120536",
+										"12": "TomTom"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "frc",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "current_speed",
+										"type": "double"
+									},
+									{
+										"key": "2",
+										"name": "free_flow_speed",
+										"type": "double"
+									},
+									{
+										"key": "3",
+										"name": "current_travel_time",
+										"type": "double"
+									},
+									{
+										"key": "4",
+										"name": "free_flow_travel_time",
+										"type": "double"
+									},
+									{
+										"key": "5",
+										"name": "confidence",
+										"type": "double"
+									},
+									{
+										"key": "6",
+										"name": "road_closure",
+										"type": "boolean"
+									},
+									{
+										"key": "7",
+										"name": "coordinates",
+										"type": "ArrayType(StructType(StructField(latitude,DoubleType,true),StructField(longitude,DoubleType,true)),true)"
+									},
+									{
+										"key": "8",
+										"name": "version",
+										"type": "string"
+									},
+									{
+										"key": "9",
+										"name": "source_file",
+										"type": "string"
+									},
+									{
+										"key": "10",
+										"name": "observation_time",
+										"type": "timestamp"
+									},
+									{
+										"key": "11",
+										"name": "processed_at",
+										"type": "timestamp"
+									},
+									{
+										"key": "12",
+										"name": "source_system",
+										"type": "string"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"82d77733-e21e-4747-9eca-79b623f5b6fc": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "0",
+										"1": "0",
+										"2": "0",
+										"3": "0",
+										"4": "0",
+										"5": "0",
+										"6": "0",
+										"7": "0",
+										"8": "0",
+										"9": "0",
+										"10": "0",
+										"11": "0",
+										"12": "0"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "frc",
+										"type": "bigint"
+									},
+									{
+										"key": "1",
+										"name": "current_speed",
+										"type": "bigint"
+									},
+									{
+										"key": "2",
+										"name": "free_flow_speed",
+										"type": "bigint"
+									},
+									{
+										"key": "3",
+										"name": "current_travel_time",
+										"type": "bigint"
+									},
+									{
+										"key": "4",
+										"name": "free_flow_travel_time",
+										"type": "bigint"
+									},
+									{
+										"key": "5",
+										"name": "confidence",
+										"type": "bigint"
+									},
+									{
+										"key": "6",
+										"name": "road_closure",
+										"type": "bigint"
+									},
+									{
+										"key": "7",
+										"name": "coordinates",
+										"type": "bigint"
+									},
+									{
+										"key": "8",
+										"name": "version",
+										"type": "bigint"
+									},
+									{
+										"key": "9",
+										"name": "source_file",
+										"type": "bigint"
+									},
+									{
+										"key": "10",
+										"name": "observation_time",
+										"type": "bigint"
+									},
+									{
+										"key": "11",
+										"name": "processed_at",
+										"type": "bigint"
+									},
+									{
+										"key": "12",
+										"name": "source_system",
+										"type": "bigint"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"1"
+									],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"3a9f90ca-282f-4cee-b80d-040ca60bc72b": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "FRC4",
+										"1": "20.0",
+										"2": "29.0",
+										"3": "220.0",
+										"4": "152.0",
+										"5": "0.986356",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-04T06_19_01.6169082Z.json",
+										"10": "2026-11-04 06:19:01",
+										"11": "2026-11-06 09:41:53.620656",
+										"12": "TomTom"
+									},
+									{
+										"0": "FRC4",
+										"1": "19.0",
+										"2": "29.0",
+										"3": "232.0",
+										"4": "152.0",
+										"5": "1.0",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T18_19_02.2532918Z.json",
+										"10": "2026-11-03 18:19:02",
+										"11": "2026-11-06 09:41:53.620656",
+										"12": "TomTom"
+									},
+									{
+										"0": "FRC4",
+										"1": "29.0",
+										"2": "29.0",
+										"3": "152.0",
+										"4": "152.0",
+										"5": "1.0",
+										"6": "false",
+										"7": [
+											{
+												"latitude": 34.04668050560837,
+												"longitude": -118.24854529887637
+											},
+											{
+												"latitude": 34.047070749409606,
+												"longitude": -118.2481697896142
+											},
+											{
+												"latitude": 34.04717943952389,
+												"longitude": -118.24806518346259
+											},
+											{
+												"latitude": 34.04757634824674,
+												"longitude": -118.24768162757337
+											},
+											{
+												"latitude": 34.047744000821915,
+												"longitude": -118.24754081160006
+											},
+											{
+												"latitude": 34.04812354447022,
+												"longitude": -118.24721894651819
+											},
+											{
+												"latitude": 34.0483086278106,
+												"longitude": -118.24702046305104
+											},
+											{
+												"latitude": 34.04843870677956,
+												"longitude": -118.24689574033182
+											},
+											{
+												"latitude": 34.04854329762637,
+												"longitude": -118.24679783970277
+											},
+											{
+												"latitude": 34.048709628753834,
+												"longitude": -118.24664093047534
+											},
+											{
+												"latitude": 34.0488504022757,
+												"longitude": -118.24650682002456
+											},
+											{
+												"latitude": 34.04896304870451,
+												"longitude": -118.24640087276846
+											},
+											{
+												"latitude": 34.049050276662484,
+												"longitude": -118.2463190653935
+											},
+											{
+												"latitude": 34.049327863762755,
+												"longitude": -118.24605755001448
+											},
+											{
+												"latitude": 34.04935737947554,
+												"longitude": -118.24602938681981
+											},
+											{
+												"latitude": 34.04952363955743,
+												"longitude": -118.24586174875634
+											},
+											{
+												"latitude": 34.04971948434846,
+												"longitude": -118.24568740517033
+											},
+											{
+												"latitude": 34.04985761715775,
+												"longitude": -118.24556268245111
+											},
+											{
+												"latitude": 34.04996484528694,
+												"longitude": -118.24546478182205
+											},
+											{
+												"latitude": 34.0500386687193,
+												"longitude": -118.24539772659665
+											},
+											{
+												"latitude": 34.05010971416317,
+												"longitude": -118.24533201247579
+											},
+											{
+												"latitude": 34.05018749600798,
+												"longitude": -118.24526227504137
+											},
+											{
+												"latitude": 34.05039674270604,
+												"longitude": -118.24507049709678
+											},
+											{
+												"latitude": 34.050454384420625,
+												"longitude": -118.24501819402096
+											},
+											{
+												"latitude": 34.05050001162957,
+												"longitude": -118.24497796088573
+											},
+											{
+												"latitude": 34.050627378776895,
+												"longitude": -118.24486128479356
+											},
+											{
+												"latitude": 34.050668977929185,
+												"longitude": -118.24482373386734
+											},
+											{
+												"latitude": 34.05073064741952,
+												"longitude": -118.24476740747801
+											},
+											{
+												"latitude": 34.05083662438934,
+												"longitude": -118.24466950684895
+											},
+											{
+												"latitude": 34.051027049253925,
+												"longitude": -118.24449650436745
+											},
+											{
+												"latitude": 34.05106725926362,
+												"longitude": -118.24445761233673
+											},
+											{
+												"latitude": 34.05115712405228,
+												"longitude": -118.24437178164823
+											},
+											{
+												"latitude": 34.0516815186126,
+												"longitude": -118.24387557298036
+											},
+											{
+												"latitude": 34.051790133369664,
+												"longitude": -118.24377230793326
+											},
+											{
+												"latitude": 34.051997987181124,
+												"longitude": -118.2435912588247
+											},
+											{
+												"latitude": 34.05217097838773,
+												"longitude": -118.24344507843335
+											},
+											{
+												"latitude": 34.05223938308302,
+												"longitude": -118.24337668210346
+											},
+											{
+												"latitude": 34.05234133028278,
+												"longitude": -118.24328280478792
+											},
+											{
+												"latitude": 34.05243383267674,
+												"longitude": -118.24320233851745
+											},
+											{
+												"latitude": 34.05267925520583,
+												"longitude": -118.24297703296016
+											},
+											{
+												"latitude": 34.052854953410865,
+												"longitude": -118.24280537158316
+											},
+											{
+												"latitude": 34.053655590937026,
+												"longitude": -118.2420691052084
+											},
+											{
+												"latitude": 34.053748161342035,
+												"longitude": -118.24197925120637
+											},
+											{
+												"latitude": 34.05383802328902,
+												"longitude": -118.24189073830888
+											},
+											{
+												"latitude": 34.0540901084586,
+												"longitude": -118.24165202170649
+											},
+											{
+												"latitude": 34.05416253940311,
+												"longitude": -118.2415849664811
+											},
+											{
+												"latitude": 34.05460510987991,
+												"longitude": -118.24117458850174
+											},
+											{
+												"latitude": 34.05477809576648,
+												"longitude": -118.24102572590137
+											},
+											{
+												"latitude": 34.05508253895841,
+												"longitude": -118.24076421052236
+											},
+											{
+												"latitude": 34.0552582321825,
+												"longitude": -118.24060596019044
+											},
+											{
+												"latitude": 34.055353439702316,
+												"longitude": -118.24052012950195
+											},
+											{
+												"latitude": 34.05542184182965,
+												"longitude": -118.24044770985853
+											}
+										],
+										"8": "4",
+										"9": "abfss://lakehouse@adls1tcba.dfs.core.windows.net/temp/tomtom/tomtom_2026-11-03T13_48_57.9712809Z.json",
+										"10": "2026-11-03 13:48:57",
+										"11": "2026-11-06 09:41:53.620656",
+										"12": "TomTom"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "frc",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "current_speed",
+										"type": "double"
+									},
+									{
+										"key": "2",
+										"name": "free_flow_speed",
+										"type": "double"
+									},
+									{
+										"key": "3",
+										"name": "current_travel_time",
+										"type": "double"
+									},
+									{
+										"key": "4",
+										"name": "free_flow_travel_time",
+										"type": "double"
+									},
+									{
+										"key": "5",
+										"name": "confidence",
+										"type": "double"
+									},
+									{
+										"key": "6",
+										"name": "road_closure",
+										"type": "boolean"
+									},
+									{
+										"key": "7",
+										"name": "coordinates",
+										"type": "ArrayType(StructType(StructField(latitude,DoubleType,true),StructField(longitude,DoubleType,true)),true)"
+									},
+									{
+										"key": "8",
+										"name": "version",
+										"type": "string"
+									},
+									{
+										"key": "9",
+										"name": "source_file",
+										"type": "string"
+									},
+									{
+										"key": "10",
+										"name": "observation_time",
+										"type": "timestamp"
+									},
+									{
+										"key": "11",
+										"name": "processed_at",
+										"type": "timestamp"
+									},
+									{
+										"key": "12",
+										"name": "source_system",
+										"type": "string"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"candidateVariableNames": [
+									"df_silver_result"
+								],
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					}
+				}
+			},
+			"enableDebugMode": false,
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/3510581a-663b-4789-9da5-5f6371bd3d51/resourceGroups/Project_TCBA/providers/Microsoft.Synapse/workspaces/synapseprojek/bigDataPools/kelompoksyanpse",
+				"name": "kelompoksyanpse",
+				"type": "Spark",
+				"endpoint": "https://synapseprojek.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/kelompoksyanpse",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.5",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from pyspark.sql import SparkSession\n",
+					"from pyspark.sql import functions as F\n",
+					"from pyspark.sql.types import *\n",
+					"\n",
+					"storage = \"adls1tcba\"\n",
+					"bronze_path = (f\"abfss://lakehouse@{storage}.dfs.core.windows.net/bronze/tomtom\")\n",
+					"temp_path = (f\"abfss://lakehouse@{storage}.dfs.core.windows.net/temp/tomtom\")\n",
+					"silver_path = (f\"abfss://lakehouse@{storage}.dfs.core.windows.net/silver/tomtom\")\n",
+					"\n",
+					"# Zona waktu pengambilan data dari nama file\n",
+					"spark.conf.set(\"spark.sql.session.timeZone\", \"UTC\")"
+				],
+				"execution_count": 36
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"from notebookutils import mssparkutils\n",
+					"import re\n",
+					"\n",
+					"files = mssparkutils.fs.ls(bronze_path)\n",
+					"\n",
+					"json_files = [\n",
+					"    f for f in files\n",
+					"    if f.name.endswith(\".json\")\n",
+					"]\n",
+					"\n",
+					"mssparkutils.fs.mkdirs(temp_path)\n",
+					"\n",
+					"for file in json_files:\n",
+					"    safe_name = re.sub(r\"[:]\", \"_\", file.name)\n",
+					"\n",
+					"    target_file = f\"{temp_path}/{safe_name}\"\n",
+					"\n",
+					"    mssparkutils.fs.cp(\n",
+					"        file.path,\n",
+					"        target_file,\n",
+					"        True\n",
+					"    )\n",
+					"\n",
+					"print(\"Jumlah file JSON:\", len(json_files))\n",
+					"print(\"Proses penyalinan selesai.\")"
+				],
+				"execution_count": 37
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df_bronze = (spark.read.option(\"multiLine\", True)\n",
+					"             .json(f\"{temp_path}/*.json\")\n",
+					"             .withColumn(\"source_file\", F.input_file_name())\n",
+					")\n",
+					"\n",
+					"df_bronze.printSchema()\n",
+					"display(df_bronze.limit(5))"
+				],
+				"execution_count": 38
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"cek missing value"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"def cek_null(df):\n",
+					"    return df.select([\n",
+					"        F.sum(\n",
+					"            F.when(\n",
+					"                F.col(c).isNull() | (F.trim(F.col(c).cast(\"string\")) == \"\"),\n",
+					"                1\n",
+					"            ).otherwise(0)\n",
+					"        ).alias(c)\n",
+					"        for c in df.columns\n",
+					"    ])\n",
+					"\n",
+					"display(cek_null(df_bronze))"
+				],
+				"execution_count": 39
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"flatten struktur JSON"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df_flat = df_bronze.select(\n",
+					"    F.col(\"flowSegmentData.frc\").alias(\"frc\"),\n",
+					"    F.col(\"flowSegmentData.currentSpeed\").alias(\"current_speed\"),\n",
+					"    F.col(\"flowSegmentData.freeFlowSpeed\").alias(\"free_flow_speed\"),\n",
+					"    F.col(\"flowSegmentData.currentTravelTime\").alias(\"current_travel_time\"),\n",
+					"    F.col(\"flowSegmentData.freeFlowTravelTime\").alias(\"free_flow_travel_time\"),\n",
+					"    F.col(\"flowSegmentData.confidence\").alias(\"confidence\"),\n",
+					"    F.col(\"flowSegmentData.roadClosure\").alias(\"road_closure\"),\n",
+					"    F.col(\"flowSegmentData.coordinates.coordinate\").alias(\"coordinates\"),\n",
+					"    F.col(\"flowSegmentData.@version\").alias(\"version\"),\n",
+					"    F.col(\"source_file\")\n",
+					")\n",
+					"\n",
+					"display(df_flat.limit(5))"
+				],
+				"execution_count": 40
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"ambil waktu observasi"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Mengambil tanggal dan waktu dari nama file\n",
+					"df_flat = df_flat.withColumn(\n",
+					"    \"observation_time\",\n",
+					"    F.to_timestamp(\n",
+					"        F.regexp_extract(\n",
+					"            F.col(\"source_file\"),\n",
+					"            r\"tomtom_(\\d{4}-\\d{2}-\\d{2}T\\d{2}_\\d{2}_\\d{2})\",\n",
+					"            1\n",
+					"        ),\n",
+					"        \"yyyy-MM-dd'T'HH_mm_ss\"\n",
+					"    )\n",
+					")"
+				],
+				"execution_count": 41
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"casting tipe data"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df_flat = (\n",
+					"    df_flat\n",
+					"    .withColumn(\"current_speed\", F.col(\"current_speed\").cast(\"double\"))\n",
+					"    .withColumn(\"free_flow_speed\", F.col(\"free_flow_speed\").cast(\"double\"))\n",
+					"    .withColumn(\"current_travel_time\", F.col(\"current_travel_time\").cast(\"double\"))\n",
+					"    .withColumn(\"free_flow_travel_time\", F.col(\"free_flow_travel_time\").cast(\"double\"))\n",
+					"    .withColumn(\"confidence\", F.col(\"confidence\").cast(\"double\"))\n",
+					"    .withColumn(\"road_closure\", F.col(\"road_closure\").cast(\"boolean\"))\n",
+					"    .withColumn(\"version\", F.col(\"version\").cast(\"string\"))\n",
+					")\n",
+					"\n",
+					"df_flat.printSchema()\n",
+					"display(df_flat.limit(5))"
+				],
+				"execution_count": 42
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"cleaning dan validasi"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"# Menghapus data yang tidak memiliki informasi penting\n",
+					"df_clean = df_flat.dropna(\n",
+					"    subset=[\n",
+					"        \"frc\",\n",
+					"        \"current_speed\",\n",
+					"        \"free_flow_speed\",\n",
+					"        \"current_travel_time\",\n",
+					"        \"free_flow_travel_time\",\n",
+					"        \"confidence\",\n",
+					"        \"road_closure\",\n",
+					"        \"coordinates\",\n",
+					"        \"observation_time\"\n",
+					"    ]\n",
+					")\n",
+					"\n",
+					"# Memastikan nilai numerik berada pada rentang yang valid\n",
+					"df_clean = df_clean.filter(\n",
+					"    (F.col(\"current_speed\") >= 0) &\n",
+					"    (F.col(\"free_flow_speed\") >= 0) &\n",
+					"    (F.col(\"current_travel_time\") >= 0) &\n",
+					"    (F.col(\"free_flow_travel_time\") >= 0) &\n",
+					"    (F.col(\"confidence\").between(0, 1)) &\n",
+					"    F.col(\"confidence\").between(0, 1) &\n",
+					"    (F.size(F.col(\"coordinates\")) > 0)\n",
+					")\n",
+					"\n",
+					"# Memastikan koordinat tersedia\n",
+					"df_clean = df_clean.filter(F.size(F.col(\"coordinates\")) > 0)\n",
+					"\n",
+					"# Menghapus duplikasi data yang benar-benar identik\n",
+					"df_clean = df_clean.dropDuplicates()\n",
+					"\n",
+					"print(\"Jumlah data setelah cleaning:\", df_clean.count())\n",
+					"display(df_clean.limit(5))"
+				],
+				"execution_count": 43
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"bentuk DataFrame Silver dan cek hasil"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df_silver = (\n",
+					"    df_clean\n",
+					"    .withColumn(\"processed_at\", F.current_timestamp())\n",
+					"    .withColumn(\"source_system\", F.lit(\"TomTom\"))\n",
+					")\n",
+					"\n",
+					"df_silver.printSchema()\n",
+					"display(df_silver.limit(10))\n",
+					"display(cek_null(df_silver))\n",
+					"print(\"Jumlah data Silver:\", df_silver.count())"
+				],
+				"execution_count": 44
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"simpan ke silver"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_silver.write.mode(\"overwrite\").format(\"parquet\").save(silver_path)"
+				],
+				"execution_count": 45
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"verifikasi hasil tersimpan"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df_silver_result = spark.read.parquet(silver_path)\n",
+					"\n",
+					"print(\"Jumlah data Silver:\", df_silver_result.count())\n",
+					"\n",
+					"display(df_silver_result)"
+				],
+				"execution_count": 46
+			}
+		]
+	}
+}

@@ -1,0 +1,2015 @@
+{
+	"name": "Notebook 1",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "kelompoksyanpse",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "64f37717-6c8b-423b-84e1-3c88f8cfc191"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1",
+				"state": {
+					"5a5f422e-2d6e-40bc-a403-f28e647baeb3": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "bandung",
+										"1": "6144"
+									},
+									{
+										"0": "denpasar",
+										"1": "6144"
+									},
+									{
+										"0": "jakarta",
+										"1": "6144"
+									},
+									{
+										"0": "semarang",
+										"1": "6144"
+									},
+									{
+										"0": "surabaya",
+										"1": "6144"
+									},
+									{
+										"0": "surakarta",
+										"1": "6144"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "kota",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "count",
+										"type": "bigint"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"1a3bac48-59fc-4411-9a99-dd7469442143": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "2026-01-01T00:00",
+										"1": "21.4",
+										"2": "90",
+										"3": "0.4",
+										"4": "6.2",
+										"5": "bandung"
+									},
+									{
+										"0": "2026-01-01T01:00",
+										"1": "21.4",
+										"2": "88",
+										"3": "0.4",
+										"4": "4.8",
+										"5": "bandung"
+									},
+									{
+										"0": "2026-01-01T02:00",
+										"1": "20.4",
+										"2": "88",
+										"3": "0.2",
+										"4": "3.8",
+										"5": "bandung"
+									},
+									{
+										"0": "2026-01-01T03:00",
+										"1": "19.9",
+										"2": "85",
+										"3": "0.1",
+										"4": "3.3",
+										"5": "bandung"
+									},
+									{
+										"0": "2026-01-01T04:00",
+										"1": "20.0",
+										"2": "83",
+										"3": "0.0",
+										"4": "2.6",
+										"5": "bandung"
+									},
+									{
+										"0": "2026-01-01T05:00",
+										"1": "19.8",
+										"2": "84",
+										"3": "0.0",
+										"4": "4.7",
+										"5": "bandung"
+									},
+									{
+										"0": "2026-01-01T06:00",
+										"1": "20.3",
+										"2": "83",
+										"3": "0.0",
+										"4": "4.9",
+										"5": "bandung"
+									},
+									{
+										"0": "2026-01-01T07:00",
+										"1": "21.4",
+										"2": "89",
+										"3": "0.0",
+										"4": "1.9",
+										"5": "bandung"
+									},
+									{
+										"0": "2026-01-01T08:00",
+										"1": "23.6",
+										"2": "78",
+										"3": "0.0",
+										"4": "6.1",
+										"5": "bandung"
+									},
+									{
+										"0": "2026-01-01T09:00",
+										"1": "24.5",
+										"2": "75",
+										"3": "0.1",
+										"4": "11.6",
+										"5": "bandung"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "time",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "temperature_2m",
+										"type": "double"
+									},
+									{
+										"key": "2",
+										"name": "relative_humidity_2m",
+										"type": "bigint"
+									},
+									{
+										"key": "3",
+										"name": "precipitation",
+										"type": "double"
+									},
+									{
+										"key": "4",
+										"name": "wind_speed_10m",
+										"type": "double"
+									},
+									{
+										"key": "5",
+										"name": "kota",
+										"type": "string"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"0468495e-ea31-467c-89bb-20b813f7a13e": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "0",
+										"1": "0",
+										"2": "0",
+										"3": "0",
+										"4": "0",
+										"5": "0",
+										"6": "0",
+										"7": "0"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "waktu",
+										"type": "bigint"
+									},
+									{
+										"key": "1",
+										"name": "pm10_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "2",
+										"name": "pm2_5_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "3",
+										"name": "no2_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "4",
+										"name": "so2_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "5",
+										"name": "o3_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "6",
+										"name": "co_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "7",
+										"name": "kota",
+										"type": "bigint"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"1"
+									],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"d1be5fba-07d3-42ec-80d9-d39223e67537": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "0",
+										"1": "0",
+										"2": "0",
+										"3": "0",
+										"4": "0",
+										"5": "0"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "time",
+										"type": "bigint"
+									},
+									{
+										"key": "1",
+										"name": "temperature_2m",
+										"type": "bigint"
+									},
+									{
+										"key": "2",
+										"name": "relative_humidity_2m",
+										"type": "bigint"
+									},
+									{
+										"key": "3",
+										"name": "precipitation",
+										"type": "bigint"
+									},
+									{
+										"key": "4",
+										"name": "wind_speed_10m",
+										"type": "bigint"
+									},
+									{
+										"key": "5",
+										"name": "kota",
+										"type": "bigint"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"1"
+									],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"5609d2f9-93b6-4ed7-b856-3edc55f14949": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "0",
+										"1": "0",
+										"2": "0",
+										"3": "0",
+										"4": "0",
+										"5": "0",
+										"6": "0",
+										"7": "0"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "waktu",
+										"type": "bigint"
+									},
+									{
+										"key": "1",
+										"name": "pm10_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "2",
+										"name": "pm2_5_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "3",
+										"name": "no2_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "4",
+										"name": "so2_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "5",
+										"name": "o3_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "6",
+										"name": "co_ug_m3",
+										"type": "bigint"
+									},
+									{
+										"key": "7",
+										"name": "kota",
+										"type": "bigint"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"1"
+									],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"510303f8-776f-4496-9330-535cca91474f": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "bandung",
+										"1": "2026-01-01 00:00:00",
+										"2": "48.1",
+										"3": "47.7",
+										"4": "44.0",
+										"5": "23.7",
+										"6": "8.0",
+										"7": "1020.0",
+										"8": "21.4",
+										"9": "90.0",
+										"10": "0.4",
+										"11": "6.2",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 01:00:00",
+										"2": "50.9",
+										"3": "50.2",
+										"4": "35.7",
+										"5": "24.8",
+										"6": "25.0",
+										"7": "869.0",
+										"8": "21.4",
+										"9": "88.0",
+										"10": "0.4",
+										"11": "4.8",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 02:00:00",
+										"2": "26.0",
+										"3": "25.2",
+										"4": "24.2",
+										"5": "26.2",
+										"6": "49.0",
+										"7": "565.0",
+										"8": "20.4",
+										"9": "88.0",
+										"10": "0.2",
+										"11": "3.8",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 03:00:00",
+										"2": "21.9",
+										"3": "21.7",
+										"4": "15.7",
+										"5": "27.0",
+										"6": "69.0",
+										"7": "335.0",
+										"8": "19.9",
+										"9": "85.0",
+										"10": "0.1",
+										"11": "3.3",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 04:00:00",
+										"2": "11.7",
+										"3": "11.7",
+										"4": "12.7",
+										"5": "26.3",
+										"6": "82.0",
+										"7": "265.0",
+										"8": "20.0",
+										"9": "83.0",
+										"10": "0.0",
+										"11": "2.6",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 05:00:00",
+										"2": "18.3",
+										"3": "18.3",
+										"4": "12.7",
+										"5": "24.9",
+										"6": "92.0",
+										"7": "268.0",
+										"8": "19.8",
+										"9": "84.0",
+										"10": "0.0",
+										"11": "4.7",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 06:00:00",
+										"2": "26.1",
+										"3": "26.1",
+										"4": "13.6",
+										"5": "24.6",
+										"6": "100.0",
+										"7": "318.0",
+										"8": "20.3",
+										"9": "83.0",
+										"10": "0.0",
+										"11": "4.9",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 07:00:00",
+										"2": "31.5",
+										"3": "31.5",
+										"4": "13.5",
+										"5": "26.2",
+										"6": "108.0",
+										"7": "421.0",
+										"8": "21.4",
+										"9": "89.0",
+										"10": "0.0",
+										"11": "1.9",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 08:00:00",
+										"2": "29.9",
+										"3": "29.9",
+										"4": "14.3",
+										"5": "28.8",
+										"6": "113.0",
+										"7": "569.0",
+										"8": "23.6",
+										"9": "78.0",
+										"10": "0.0",
+										"11": "6.1",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 09:00:00",
+										"2": "30.3",
+										"3": "30.3",
+										"4": "20.5",
+										"5": "32.0",
+										"6": "109.0",
+										"7": "712.0",
+										"8": "24.5",
+										"9": "75.0",
+										"10": "0.1",
+										"11": "11.6",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 10:00:00",
+										"2": "41.7",
+										"3": "41.7",
+										"4": "37.2",
+										"5": "36.3",
+										"6": "87.0",
+										"7": "867.0",
+										"8": "25.0",
+										"9": "73.0",
+										"10": "0.0",
+										"11": "10.9",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 11:00:00",
+										"2": "67.1",
+										"3": "67.1",
+										"4": "59.2",
+										"5": "41.1",
+										"6": "54.0",
+										"7": "1017.0",
+										"8": "26.5",
+										"9": "65.0",
+										"10": "0.1",
+										"11": "13.0",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 12:00:00",
+										"2": "48.2",
+										"3": "47.6",
+										"4": "66.0",
+										"5": "39.2",
+										"6": "7.0",
+										"7": "1062.0",
+										"8": "26.8",
+										"9": "63.0",
+										"10": "0.1",
+										"11": "15.7",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 13:00:00",
+										"2": "62.4",
+										"3": "61.2",
+										"4": "65.2",
+										"5": "40.8",
+										"6": "5.0",
+										"7": "920.0",
+										"8": "26.4",
+										"9": "63.0",
+										"10": "0.2",
+										"11": "17.4",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 14:00:00",
+										"2": "72.9",
+										"3": "71.7",
+										"4": "63.8",
+										"5": "42.8",
+										"6": "3.0",
+										"7": "674.0",
+										"8": "26.0",
+										"9": "66.0",
+										"10": "0.1",
+										"11": "13.8",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 15:00:00",
+										"2": "84.8",
+										"3": "83.6",
+										"4": "61.4",
+										"5": "42.9",
+										"6": "1.0",
+										"7": "470.0",
+										"8": "25.7",
+										"9": "65.0",
+										"10": "0.0",
+										"11": "13.6",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 16:00:00",
+										"2": "100.6",
+										"3": "99.2",
+										"4": "57.3",
+										"5": "39.6",
+										"6": "0.0",
+										"7": "367.0",
+										"8": "23.4",
+										"9": "80.0",
+										"10": "0.3",
+										"11": "10.1",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 17:00:00",
+										"2": "104.8",
+										"3": "103.6",
+										"4": "52.0",
+										"5": "34.5",
+										"6": "0.0",
+										"7": "306.0",
+										"8": "22.6",
+										"9": "85.0",
+										"10": "1.1",
+										"11": "7.8",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 18:00:00",
+										"2": "112.7",
+										"3": "111.5",
+										"4": "46.9",
+										"5": "30.0",
+										"6": "0.0",
+										"7": "261.0",
+										"8": "22.2",
+										"9": "87.0",
+										"10": "0.3",
+										"11": "6.4",
+										"12": "2026-01"
+									},
+									{
+										"0": "bandung",
+										"1": "2026-01-01 19:00:00",
+										"2": "113.6",
+										"3": "112.5",
+										"4": "40.6",
+										"5": "26.5",
+										"6": "0.0",
+										"7": "192.0",
+										"8": "22.1",
+										"9": "87.0",
+										"10": "0.2",
+										"11": "12.0",
+										"12": "2026-01"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "kota",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "waktu",
+										"type": "timestamp"
+									},
+									{
+										"key": "2",
+										"name": "pm10_ug_m3",
+										"type": "double"
+									},
+									{
+										"key": "3",
+										"name": "pm2_5_ug_m3",
+										"type": "double"
+									},
+									{
+										"key": "4",
+										"name": "no2_ug_m3",
+										"type": "double"
+									},
+									{
+										"key": "5",
+										"name": "so2_ug_m3",
+										"type": "double"
+									},
+									{
+										"key": "6",
+										"name": "o3_ug_m3",
+										"type": "double"
+									},
+									{
+										"key": "7",
+										"name": "co_ug_m3",
+										"type": "double"
+									},
+									{
+										"key": "8",
+										"name": "temperature_2m",
+										"type": "double"
+									},
+									{
+										"key": "9",
+										"name": "relative_humidity_2m",
+										"type": "double"
+									},
+									{
+										"key": "10",
+										"name": "precipitation",
+										"type": "double"
+									},
+									{
+										"key": "11",
+										"name": "wind_speed_10m",
+										"type": "double"
+									},
+									{
+										"key": "12",
+										"name": "bulan",
+										"type": "string"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"2"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"5462ace7-912a-424b-8853-11ffad9fe838": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "bandung",
+										"1": "6144",
+										"2": "68.4",
+										"3": "23.7"
+									},
+									{
+										"0": "denpasar",
+										"1": "6144",
+										"2": "10.9",
+										"3": "26.0"
+									},
+									{
+										"0": "jakarta",
+										"1": "6144",
+										"2": "70.3",
+										"3": "28.1"
+									},
+									{
+										"0": "semarang",
+										"1": "6144",
+										"2": "27.4",
+										"3": "27.8"
+									},
+									{
+										"0": "surabaya",
+										"1": "6144",
+										"2": "33.7",
+										"3": "28.0"
+									},
+									{
+										"0": "surakarta",
+										"1": "6144",
+										"2": "52.6",
+										"3": "26.4"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "kota",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "jumlah_jam",
+										"type": "bigint"
+									},
+									{
+										"key": "2",
+										"name": "rata_pm25",
+										"type": "double"
+									},
+									{
+										"key": "3",
+										"name": "rata_suhu",
+										"type": "double"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"6dc917db-4ef7-4335-be9a-fecd5f7e1919": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "3",
+										"1": "2026-11-10 12:28:24.754",
+										"2": "UPDATE",
+										"3": {
+											"numRemovedFiles": "1",
+											"numRemovedBytes": "29168",
+											"numCopiedRows": "0",
+											"numDeletionVectorsAdded": "0",
+											"numDeletionVectorsRemoved": "0",
+											"numAddedChangeFiles": "0",
+											"executionTimeMs": "2016",
+											"numDeletionVectorsUpdated": "0",
+											"scanTimeMs": "884",
+											"numAddedFiles": "1",
+											"numUpdatedRows": "744",
+											"numAddedBytes": "29161",
+											"rewriteTimeMs": "1114"
+										}
+									},
+									{
+										"0": "2",
+										"1": "2026-11-10 12:27:46.795",
+										"2": "WRITE",
+										"3": {
+											"numFiles": "54",
+											"numOutputRows": "36864",
+											"numOutputBytes": "1376900"
+										}
+									},
+									{
+										"0": "1",
+										"1": "2026-11-03 08:28:43.623",
+										"2": "UPDATE",
+										"3": {
+											"numRemovedFiles": "1",
+											"numRemovedBytes": "29105",
+											"numCopiedRows": "0",
+											"numDeletionVectorsAdded": "0",
+											"numDeletionVectorsRemoved": "0",
+											"numAddedChangeFiles": "0",
+											"executionTimeMs": "1822",
+											"numDeletionVectorsUpdated": "0",
+											"scanTimeMs": "734",
+											"numAddedFiles": "1",
+											"numUpdatedRows": "744",
+											"numAddedBytes": "29084",
+											"rewriteTimeMs": "1068"
+										}
+									},
+									{
+										"0": "0",
+										"1": "2026-11-03 08:28:07.008",
+										"2": "WRITE",
+										"3": {
+											"numFiles": "54",
+											"numOutputRows": "36864",
+											"numOutputBytes": "1376586"
+										}
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "version",
+										"type": "bigint"
+									},
+									{
+										"key": "1",
+										"name": "timestamp",
+										"type": "timestamp"
+									},
+									{
+										"key": "2",
+										"name": "operation",
+										"type": "string"
+									},
+									{
+										"key": "3",
+										"name": "operationMetrics",
+										"type": "MapType(StringType,StringType,true)"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"1"
+									],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"b0c6297d-1ad6-48fe-b848-34d6ce939394": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "A. Parquet tanpa partisi",
+										"1": "0.43",
+										"2": "0.51"
+									},
+									{
+										"0": "B. Delta tanpa partisi",
+										"1": "0.54",
+										"2": "0.55"
+									},
+									{
+										"0": "C. Delta kota+bulan",
+										"1": "0.38",
+										"2": "0.43"
+									},
+									{
+										"0": "P5. Parquet partisi kota",
+										"1": "0.4",
+										"2": "0.42"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "skenario",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "tercepat_dtk",
+										"type": "double"
+									},
+									{
+										"key": "2",
+										"name": "rata2_dtk",
+										"type": "double"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"19e0c65c-dc1c-48e1-b1f5-e3cb16f6bdd6": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "A. Parquet tanpa partisi",
+										"1": "6",
+										"2": "0.8"
+									},
+									{
+										"0": "B. Delta tanpa partisi",
+										"1": "12",
+										"2": "1.59"
+									},
+									{
+										"0": "C. Delta kota+bulan",
+										"1": "109",
+										"2": "2.65"
+									},
+									{
+										"0": "P5. Parquet partisi kota",
+										"1": "6",
+										"2": "0.76"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "skenario",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "jumlah_file",
+										"type": "bigint"
+									},
+									{
+										"key": "2",
+										"name": "ukuran_mb",
+										"type": "double"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"598fcdd1-aef1-4e72-b657-e0c86244e53c": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "A. Parquet tanpa partisi",
+										"1": "query (run 1)",
+										"2": "0.65"
+									},
+									{
+										"0": "A. Parquet tanpa partisi",
+										"1": "query (run 2)",
+										"2": "0.43"
+									},
+									{
+										"0": "A. Parquet tanpa partisi",
+										"1": "query (run 3)",
+										"2": "0.44"
+									},
+									{
+										"0": "A. Parquet tanpa partisi",
+										"1": "tulis",
+										"2": "2.78"
+									},
+									{
+										"0": "B. Delta tanpa partisi",
+										"1": "query (run 1)",
+										"2": "0.55"
+									},
+									{
+										"0": "B. Delta tanpa partisi",
+										"1": "query (run 2)",
+										"2": "0.54"
+									},
+									{
+										"0": "B. Delta tanpa partisi",
+										"1": "query (run 3)",
+										"2": "0.57"
+									},
+									{
+										"0": "B. Delta tanpa partisi",
+										"1": "tulis",
+										"2": "14.33"
+									},
+									{
+										"0": "C. Delta kota+bulan",
+										"1": "query (run 1)",
+										"2": "0.43"
+									},
+									{
+										"0": "C. Delta kota+bulan",
+										"1": "query (run 2)",
+										"2": "0.38"
+									},
+									{
+										"0": "C. Delta kota+bulan",
+										"1": "query (run 3)",
+										"2": "0.47"
+									},
+									{
+										"0": "C. Delta kota+bulan",
+										"1": "tulis",
+										"2": "10.61"
+									},
+									{
+										"0": "D. Tanpa cache",
+										"1": "3 agregasi (run 1)",
+										"2": "3.01"
+									},
+									{
+										"0": "D. Tanpa cache",
+										"1": "3 agregasi (run 2)",
+										"2": "1.54"
+									},
+									{
+										"0": "E. Dengan cache",
+										"1": "3 agregasi (run 1)",
+										"2": "1.07"
+									},
+									{
+										"0": "E. Dengan cache",
+										"1": "3 agregasi (run 2)",
+										"2": "0.93"
+									},
+									{
+										"0": "E. Dengan cache",
+										"1": "isi cache",
+										"2": "0.58"
+									},
+									{
+										"0": "P5. Parquet partisi kota",
+										"1": "query (run 1)",
+										"2": "0.46"
+									},
+									{
+										"0": "P5. Parquet partisi kota",
+										"1": "query (run 2)",
+										"2": "0.41"
+									},
+									{
+										"0": "P5. Parquet partisi kota",
+										"1": "query (run 3)",
+										"2": "0.4"
+									},
+									{
+										"0": "Transformasi",
+										"1": "cache",
+										"2": "7.42"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "skenario",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "tahap",
+										"type": "string"
+									},
+									{
+										"key": "2",
+										"name": "detik",
+										"type": "double"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala",
+							"wranglerEntryContext": {
+								"dataframeType": "pyspark"
+							}
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"2"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					}
+				}
+			},
+			"enableDebugMode": false,
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/3510581a-663b-4789-9da5-5f6371bd3d51/resourceGroups/Project_TCBA/providers/Microsoft.Synapse/workspaces/synapseprojek/bigDataPools/kelompoksyanpse",
+				"name": "kelompoksyanpse",
+				"type": "Spark",
+				"endpoint": "https://synapseprojek.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/kelompoksyanpse",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.5",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Pertemuan 5"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"konfigurasi\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"from pyspark.sql import functions as F\n",
+					"from pyspark.sql.window import Window\n",
+					"\n",
+					"storage    = \"adls1tcba\"\n",
+					"aqi_path   = f\"abfss://datacuaca@{storage}.dfs.core.windows.net\"\n",
+					"cuaca_path = f\"abfss://cuaca@{storage}.dfs.core.windows.net\"\n",
+					"curated    = f\"abfss://curated@{storage}.dfs.core.windows.net\"\n",
+					"\n",
+					"kota = {\n",
+					"    \"bandung\":   (-6.9175, 107.6191), \"denpasar\":  (-8.6705, 115.2126),\n",
+					"    \"jakarta\":   (-6.2088, 106.8456), \"semarang\":  (-6.9667, 110.4167),\n",
+					"    \"surabaya\":  (-7.2575, 112.7521), \"surakarta\": (-7.5755, 110.8243),\n",
+					"}"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"baca data semua kota dan bulan sekaligus"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"aqi_raw = (spark.read.option(\"header\", True)\n",
+					"           .csv(f\"{aqi_path}/raw/data/*/*/*.csv\")\n",
+					"           .withColumn(\"file\", F.input_file_name())\n",
+					"           .withColumn(\"kota\", F.regexp_extract(\"file\", r\"/([a-z]+)/\\d{2}/\", 1))\n",
+					"           .drop(\"file\"))\n",
+					"\n",
+					"aqi_raw.printSchema()\n",
+					"display(aqi_raw.groupBy(\"kota\").count().orderBy(\"kota\"))"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"ambil data cuaca per jam dan simpann ke container cuaca"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"import time, requests, pandas as pd\n",
+					"\n",
+					"def ambil_cuaca(lat, lon, percobaan=5):\n",
+					"    for i in range(percobaan):\n",
+					"        try:\n",
+					"            r = requests.get(\"https://archive-api.open-meteo.com/v1/archive\", params={\n",
+					"                \"latitude\": lat, \"longitude\": lon,\n",
+					"                \"start_date\": \"2026-01-01\", \"end_date\": \"2026-09-30\",\n",
+					"                \"hourly\": \"temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m\",\n",
+					"                \"timezone\": \"Asia/Jakarta\"}, timeout=(20, 120))\n",
+					"            r.raise_for_status()\n",
+					"            return pd.DataFrame(r.json()[\"hourly\"])\n",
+					"        except Exception as e:\n",
+					"            print(f\"  percobaan {i+1} gagal: {type(e).__name__}, coba lagi...\")\n",
+					"            time.sleep(5 * (i + 1))\n",
+					"    raise RuntimeError(\"Open-Meteo tidak bisa dihubungi\")\n",
+					"\n",
+					"frames = []\n",
+					"for k, (lat, lon) in kota.items():\n",
+					"    print(\"Ambil cuaca:\", k)\n",
+					"    df = ambil_cuaca(lat, lon)\n",
+					"    df[\"kota\"] = k\n",
+					"    frames.append(df)\n",
+					"    time.sleep(2)\n",
+					"\n",
+					"cuaca_raw = spark.createDataFrame(pd.concat(frames))\n",
+					"print(\"Baris cuaca:\", cuaca_raw.count())\n",
+					"display(cuaca_raw.limit(10))\n",
+					""
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# opsional: simpan ke container cuaca (pastikan container sudah dibuat)\n",
+					"# cuaca_raw.write.mode(\"overwrite\").option(\"header\", True).partitionBy(\"kota\").csv(f\"{cuaca_path}/hourly\")"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"cek missing value"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"def cek_null(df):\n",
+					"    return df.select([F.sum(F.when(F.col(c).isNull() | (F.col(c) == \"\") | (F.col(c) == \"NaN\"), 1)\n",
+					"                      .otherwise(0)).alias(c) for c in df.columns])\n",
+					"\n",
+					"display(cek_null(aqi_raw))\n",
+					"display(cek_null(cuaca_raw))"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"casting tipe data"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"polutan = [\"pm10_ug_m3\", \"pm2_5_ug_m3\", \"no2_ug_m3\", \"so2_ug_m3\", \"o3_ug_m3\", \"co_ug_m3\"]\n",
+					"cuaca_cols = [\"temperature_2m\", \"relative_humidity_2m\", \"precipitation\", \"wind_speed_10m\"]\n",
+					"\n",
+					"aqi = aqi_raw.withColumn(\"waktu\", F.to_timestamp(\"waktu\", \"yyyy-MM-dd HH:mm:ss\"))\n",
+					"for c in polutan:\n",
+					"    aqi = aqi.withColumn(c, F.col(c).cast(\"double\"))\n",
+					"\n",
+					"cuaca = (cuaca_raw.withColumn(\"waktu\", F.to_timestamp(\"time\", \"yyyy-MM-dd'T'HH:mm\"))\n",
+					"                  .drop(\"time\"))\n",
+					"for c in cuaca_cols:\n",
+					"    cuaca = cuaca.withColumn(c, F.col(c).cast(\"double\"))\n",
+					"\n",
+					"aqi.printSchema()\n",
+					"cuaca.printSchema()"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Cleaning\n",
+					"\n",
+					"Langkah cleaning-nya:\n",
+					"\n",
+					"NaN dan nilai negatif diubah jadi null.\n",
+					"Baris tanpa kota atau waktu dibuang, begitu juga duplikat.\n",
+					"Nilai null diisi rata-rata harian kota tersebut."
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"def bersihkan(df, cols):\n",
+					"    for c in cols:\n",
+					"        df = df.withColumn(c, F.when(F.isnan(c) | (F.col(c) < 0), None).otherwise(F.col(c)))\n",
+					"    df = df.dropna(subset=[\"kota\", \"waktu\"]).dropDuplicates([\"kota\", \"waktu\"])\n",
+					"    w = Window.partitionBy(\"kota\", F.to_date(\"waktu\"))\n",
+					"    for c in cols:\n",
+					"        df = df.withColumn(c, F.coalesce(F.col(c), F.round(F.avg(c).over(w), 2)))\n",
+					"    return df.dropna(subset=cols)\n",
+					"\n",
+					"aqi_bersih   = bersihkan(aqi, polutan)\n",
+					"cuaca_bersih = bersihkan(cuaca, cuaca_cols)\n",
+					"\n",
+					"display(cek_null(aqi_bersih))     # screenshot \"sesudah\""
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"join polusi + cuaca"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"gabung = (aqi_bersih.join(cuaca_bersih, on=[\"kota\", \"waktu\"], how=\"inner\")\n",
+					"          .withColumn(\"bulan\", F.date_format(\"waktu\", \"yyyy-MM\"))\n",
+					"          .orderBy(\"kota\", \"waktu\"))\n",
+					"\n",
+					"print(\"Polusi:\", aqi_bersih.count(), \"| Cuaca:\", cuaca_bersih.count(), \"| Gabung:\", gabung.count())\n",
+					"display(gabung.limit(20))"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"simpan ke curated dan verifikasi"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"gabung.write.mode(\"overwrite\").partitionBy(\"kota\").parquet(f\"{curated}/polusi_cuaca\")\n",
+					"\n",
+					"hasil = spark.read.parquet(f\"{curated}/polusi_cuaca\")\n",
+					"display(hasil.groupBy(\"kota\").agg(\n",
+					"    F.count(\"*\").alias(\"jumlah_jam\"),\n",
+					"    F.round(F.avg(\"pm2_5_ug_m3\"), 1).alias(\"rata_pm25\"),\n",
+					"    F.round(F.avg(\"temperature_2m\"), 1).alias(\"rata_suhu\")).orderBy(\"kota\"))"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Pertemuan 8"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Path output dan fungsi pengukur"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import time\n",
+					"from delta.tables import DeltaTable\n",
+					"\n",
+					"p8            = f\"{curated}/pertemuan8\"\n",
+					"path_parquet  = f\"{p8}/A_parquet_flat\"\n",
+					"path_delta    = f\"{p8}/B_delta_flat\"\n",
+					"path_partisi  = f\"{p8}/C_delta_kota_bulan\"\n",
+					"path_p5       = f\"{curated}/polusi_cuaca\"\n",
+					"\n",
+					"hasil_ukur, hasil_folder = [], []\n",
+					"\n",
+					"def ukur(skenario, tahap, fn, ulang=1):\n",
+					"    for i in range(ulang):\n",
+					"        t0 = time.time()\n",
+					"        out = fn()\n",
+					"        d = round(time.time() - t0, 2)\n",
+					"        label = tahap if ulang == 1 else f\"{tahap} (run {i+1})\"\n",
+					"        hasil_ukur.append((skenario, label, d))\n",
+					"        print(f\"{skenario} | {label}: {d} dtk\")\n",
+					"    return out\n",
+					"\n",
+					"def info_folder(path):\n",
+					"    n, b = 0, 0\n",
+					"    for f in mssparkutils.fs.ls(path):\n",
+					"        nama = f.name.rstrip(\"/\")\n",
+					"        if nama.startswith(\"_\"):\n",
+					"            continue\n",
+					"        if f.isDir:\n",
+					"            n2, b2 = info_folder(f\"{path}/{nama}\")\n",
+					"            n, b = n + n2, b + b2\n",
+					"        elif nama.endswith(\".parquet\"):\n",
+					"            n, b = n + 1, b + f.size\n",
+					"    return n, b\n",
+					"\n",
+					"def catat_folder(skenario, path):\n",
+					"    n, b = info_folder(path)\n",
+					"    hasil_folder.append((skenario, n, round(b / 1024 / 1024, 2)))\n",
+					"    print(f\"{skenario}: {n} file, {b/1024/1024:.2f} MB\")"
+				],
+				"execution_count": 11
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Tambah kolom tanggal, jam, kategori PM2.5 lalu cache"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"data = (gabung\n",
+					"        .withColumn(\"tanggal\", F.to_date(\"waktu\"))\n",
+					"        .withColumn(\"jam\", F.hour(\"waktu\"))\n",
+					"        .withColumn(\"kategori_pm25\",\n",
+					"                    F.when(F.col(\"pm2_5_ug_m3\") <= 15.5, \"baik\")\n",
+					"                     .when(F.col(\"pm2_5_ug_m3\") <= 55.4, \"sedang\")\n",
+					"                     .when(F.col(\"pm2_5_ug_m3\") <= 150.4, \"tidak sehat\")\n",
+					"                     .otherwise(\"sangat tidak sehat\")))\n",
+					"\n",
+					"data.cache()\n",
+					"n = ukur(\"Transformasi\", \"cache\", lambda: data.count())\n",
+					"print(\"Jumlah baris:\", n)"
+				],
+				"execution_count": 12
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Tulis tiga versi: Parquet, Delta, Delta berpartisi kota + bulan"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"ukur(\"A. Parquet tanpa partisi\", \"tulis\",\n",
+					"     lambda: data.coalesce(6).write.mode(\"overwrite\").parquet(path_parquet))\n",
+					"ukur(\"B. Delta tanpa partisi\", \"tulis\",\n",
+					"     lambda: data.coalesce(6).write.format(\"delta\").mode(\"overwrite\").save(path_delta))\n",
+					"ukur(\"C. Delta kota+bulan\", \"tulis\",\n",
+					"     lambda: data.repartition(\"kota\", \"bulan\").write.format(\"delta\").mode(\"overwrite\")\n",
+					"                 .partitionBy(\"kota\", \"bulan\").save(path_partisi))\n",
+					"\n",
+					"catat_folder(\"A. Parquet tanpa partisi\", path_parquet)\n",
+					"catat_folder(\"B. Delta tanpa partisi\", path_delta)\n",
+					"catat_folder(\"C. Delta kota+bulan\", path_partisi)\n",
+					"catat_folder(\"P5. Parquet partisi kota\", path_p5)"
+				],
+				"execution_count": 13
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Query uji: PM2.5 Jakarta bulan Maret"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"def query_uji(df):\n",
+					"    return (df.filter((F.col(\"kota\") == \"jakarta\") & (F.col(\"bulan\") == \"2026-03\"))\n",
+					"              .groupBy(\"kota\", \"bulan\")\n",
+					"              .agg(F.count(\"*\").alias(\"jam\"),\n",
+					"                   F.round(F.avg(\"pm2_5_ug_m3\"), 2).alias(\"rata_pm25\"),\n",
+					"                   F.max(\"pm2_5_ug_m3\").alias(\"maks_pm25\")))\n",
+					"\n",
+					"skenario = {\n",
+					"    \"P5. Parquet partisi kota\": spark.read.parquet(path_p5),\n",
+					"    \"A. Parquet tanpa partisi\": spark.read.parquet(path_parquet),\n",
+					"    \"B. Delta tanpa partisi\":   spark.read.format(\"delta\").load(path_delta),\n",
+					"    \"C. Delta kota+bulan\":      spark.read.format(\"delta\").load(path_partisi),\n",
+					"}\n",
+					"\n",
+					"for nama, df in skenario.items():\n",
+					"    print(nama, \"->\", query_uji(df).first())\n",
+					"\n",
+					"for nama, df in skenario.items():\n",
+					"    ukur(nama, \"query\", lambda df=df: query_uji(df).collect(), ulang=3)"
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Cek partition pruning dan predicate pushdown di rencana eksekusi"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"for nama in [\"A. Parquet tanpa partisi\", \"C. Delta kota+bulan\"]:\n",
+					"    print(\"=====\", nama)\n",
+					"    query_uji(skenario[nama]).explain()\n",
+					"\n",
+					"print(\"===== C, filter pm2_5 > 100\")\n",
+					"skenario[\"C. Delta kota+bulan\"].filter(F.col(\"pm2_5_ug_m3\") > 100).explain()"
+				],
+				"execution_count": 15
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Caching: tiga agregasi tanpa cache vs dengan cache"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_jkt = spark.read.format(\"delta\").load(path_partisi).filter(F.col(\"kota\") == \"jakarta\")\n",
+					"\n",
+					"def tiga_agregasi(df):\n",
+					"    df.groupBy(\"bulan\").agg(F.avg(\"pm2_5_ug_m3\")).collect()\n",
+					"    df.groupBy(\"kategori_pm25\").count().collect()\n",
+					"    df.agg(F.max(\"temperature_2m\"), F.min(\"temperature_2m\")).collect()\n",
+					"\n",
+					"ukur(\"D. Tanpa cache\", \"3 agregasi\", lambda: tiga_agregasi(df_jkt), ulang=2)\n",
+					"\n",
+					"df_jkt.cache()\n",
+					"ukur(\"E. Dengan cache\", \"isi cache\", lambda: df_jkt.count())\n",
+					"ukur(\"E. Dengan cache\", \"3 agregasi\", lambda: tiga_agregasi(df_jkt), ulang=2)\n",
+					"df_jkt.unpersist()"
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Update data Delta lalu time travel ke versi sebelumnya"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"dt = DeltaTable.forPath(spark, path_partisi)\n",
+					"v_lama = dt.history(1).select(\"version\").first()[0]\n",
+					"\n",
+					"def pm25_jkt_jan(df):\n",
+					"    return (df.filter((F.col(\"kota\") == \"jakarta\") & (F.col(\"bulan\") == \"2026-01\"))\n",
+					"              .agg(F.round(F.avg(\"pm2_5_ug_m3\"), 2)).first()[0])\n",
+					"\n",
+					"sebelum = pm25_jkt_jan(spark.read.format(\"delta\").load(path_partisi))\n",
+					"dt.update(\"kota = 'jakarta' AND bulan = '2026-01'\", {\"pm2_5_ug_m3\": \"pm2_5_ug_m3 + 10\"})\n",
+					"sesudah = pm25_jkt_jan(spark.read.format(\"delta\").load(path_partisi))\n",
+					"versi_lama = pm25_jkt_jan(spark.read.format(\"delta\").option(\"versionAsOf\", v_lama).load(path_partisi))\n",
+					"\n",
+					"print(\"Sebelum update :\", sebelum)\n",
+					"print(\"Sesudah update :\", sesudah)\n",
+					"print(f\"Versi {v_lama}       :\", versi_lama)\n",
+					"display(dt.history().select(\"version\", \"timestamp\", \"operation\", \"operationMetrics\"))"
+				],
+				"execution_count": 17
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Ringkasan perbandingan"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df_hasil  = spark.createDataFrame(hasil_ukur, [\"skenario\", \"tahap\", \"detik\"])\n",
+					"df_folder = spark.createDataFrame(hasil_folder, [\"skenario\", \"jumlah_file\", \"ukuran_mb\"])\n",
+					"\n",
+					"display(df_hasil.filter(F.col(\"tahap\").startswith(\"query\"))\n",
+					"        .groupBy(\"skenario\")\n",
+					"        .agg(F.min(\"detik\").alias(\"tercepat_dtk\"), F.round(F.avg(\"detik\"), 2).alias(\"rata2_dtk\"))\n",
+					"        .orderBy(\"skenario\"))\n",
+					"display(df_folder.orderBy(\"skenario\"))\n",
+					"display(df_hasil.orderBy(\"skenario\", \"tahap\"))"
+				],
+				"execution_count": 18
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Hentikan Spark (wajib, supaya kredit tidak terus terpotong)"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"mssparkutils.session.stop()"
+				],
+				"execution_count": 19
+			}
+		]
+	}
+}
