@@ -1,0 +1,14 @@
+{
+	"name": "ls_http_tomtom",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "TomTom Realtime (currentSpead, tingkat kemacetan)",
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://api.tomtom.com",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}

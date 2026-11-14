@@ -1,0 +1,19 @@
+{
+	"name": "Source_RestResource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_http_tomtom",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "traffic/services/4/flowSegmentData/relative-delay/10/json?key=UbtSWBgOc3H22G1x2lk2R5Aw6z6TPD8I&point=34.0522,-118.2437"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

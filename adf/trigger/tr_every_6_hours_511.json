@@ -1,0 +1,25 @@
+{
+	"name": "tr_every_6_hours_511",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_ingest_511transit_to_bronze",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 6,
+				"startTime": "2026-11-11T19:39:00",
+				"endTime": "2026-12-01T14:39:00",
+				"timeZone": "SE Asia Standard Time"
+			}
+		}
+	}
+}

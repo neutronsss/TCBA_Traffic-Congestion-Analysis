@@ -1,0 +1,16 @@
+{
+	"name": "ds_rest_511transit",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_rest_511transit",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "traffic/events?api_key=2a7dc611-04f7-4497-86b0-28ad9148afaf&format=json"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

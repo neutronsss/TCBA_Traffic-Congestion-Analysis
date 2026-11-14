@@ -1,0 +1,25 @@
+{
+	"name": "trig_tomtom_daily",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_ingest_tomtom_6hours",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 6,
+				"startTime": "2026-11-12T19:38:00",
+				"endTime": "2026-12-02T14:39:00",
+				"timeZone": "SE Asia Standard Time"
+			}
+		}
+	}
+}

@@ -1,0 +1,24 @@
+{
+	"name": "ds_adls_bronze_tomtom",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat('tomtom_', utcnow(), '.json')",
+					"type": "Expression"
+				},
+				"folderPath": "bronze/tomtom",
+				"fileSystem": "lakehouse"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

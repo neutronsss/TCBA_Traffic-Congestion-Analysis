@@ -1,0 +1,16 @@
+{
+	"name": "adf-kel4-tcba",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true,
+			"isExplicitlySet": false
+		}
+	},
+	"location": "eastasia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "2a8a12b0-4268-4f81-a5e4-5f05aca74ab1",
+		"tenantId": "8159c5c1-0e8b-4f3d-bed7-d58b0a0ec0d5"
+	}
+}
