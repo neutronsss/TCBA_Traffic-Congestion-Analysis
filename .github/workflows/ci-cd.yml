@@ -57,10 +57,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Upload skrip ke ADLS Gen2 (adls1tcba)
+      - name: Upload skrip ke ADLS Gen2
         run: |
           az storage blob upload-batch \
             --account-name adls1tcba \
+            --auth-mode login \
             --destination lakehouse \
             --destination-path scripts/ \
             --source ./notebook \
