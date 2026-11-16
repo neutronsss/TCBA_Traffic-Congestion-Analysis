@@ -1,0 +1,1047 @@
+{
+	"name": "preprocessing2",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "kelompoksyanpse",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "6f452098-802c-4098-83d9-1b6676248abc"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/3510581a-663b-4789-9da5-5f6371bd3d51/resourceGroups/Project_TCBA/providers/Microsoft.Synapse/workspaces/synapseprojek/bigDataPools/kelompoksyanpse",
+				"name": "kelompoksyanpse",
+				"type": "Spark",
+				"endpoint": "https://synapseprojek.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/kelompoksyanpse",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.5",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from pyspark.sql import functions as F\n",
+					"from pyspark.sql import types as T\n",
+					"from pyspark.sql.window import Window\n",
+					"from delta.tables import DeltaTable\n",
+					"\n",
+					"storage = \"adls1tcba\"\n",
+					"container = \"lakehouse\"\n",
+					"\n",
+					"# Sumber Parquet terpartisi\n",
+					"bronze_root = (f\"abfss://{container}@{storage}.dfs.core.windows.net/bronze/tomtom_partitioned\")\n",
+					"\n",
+					"# Output Delta\n",
+					"silver_root = (f\"abfss://{container}@{storage}.dfs.core.windows.net/silver/tomtom\")\n",
+					"gold_root = (f\"abfss://{container}@{storage}.dfs.core.windows.net/gold/tomtom\")\n",
+					"\n",
+					"# Zona waktu: UTC untuk timestamp sumber jika timestamp memang UTC.\n",
+					"spark.conf.set(\"spark.sql.session.timeZone\", \"UTC\")\n",
+					"\n",
+					"print(\"Bronze:\", bronze_root)\n",
+					"print(\"Silver:\", silver_root)\n",
+					"print(\"Gold:\", gold_root)\n",
+					"print(\"Spark version:\", spark.version)"
+				],
+				"execution_count": 23
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Baca seluruh batch Parquet dari root Bronze"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"# Membaca root folder agar Spark menemukan partisi year=... dan month=...\n",
+					"# Jangan tambahkan recursiveFileLookup=True.\n",
+					"df_bronze = (\n",
+					"    spark.read\n",
+					"    .format(\"parquet\")\n",
+					"    .load(bronze_root)\n",
+					")\n",
+					"\n",
+					"print(\"Jumlah kolom:\", len(df_bronze.columns))\n",
+					"print(\"Kolom:\", df_bronze.columns)\n",
+					"df_bronze.printSchema()\n",
+					"display(df_bronze.limit(10))"
+				],
+				"execution_count": 24
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql import functions as F\n",
+					"\n",
+					"print(\"Jumlah baris:\", df_bronze.count())\n",
+					"print(\"Jumlah kolom:\", len(df_bronze.columns))\n",
+					"\n",
+					"# Nilai null per kolom\n",
+					"null_profile = df_bronze.select([\n",
+					"    F.count(F.when(F.col(c).isNull(), 1)).alias(c)\n",
+					"    for c in df_bronze.columns\n",
+					"])\n",
+					"display(null_profile)\n",
+					"\n",
+					"# Pastikan partisi year dan month berhasil terbaca\n",
+					"for required_partition in [\"year\", \"month\"]:\n",
+					"    if required_partition not in df_bronze.columns:\n",
+					"        print(f\"PERHATIAN: kolom partisi {required_partition} tidak ditemukan.\")\n",
+					"    else:\n",
+					"        print(f\"Distinct {required_partition}:\")\n",
+					"        display(df_bronze.select(required_partition).distinct().orderBy(required_partition))"
+				],
+				"execution_count": 25
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Konfigurasi pemetaan kolom"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Identitas wilayah\n",
+					"COL_COUNTRY = \"Country\"\n",
+					"COL_CITY = \"City\"\n",
+					"\n",
+					"# Kolom waktu\n",
+					"COL_TIMESTAMP = \"UpdateTimeUTC\"\n",
+					"COL_LOCAL_TIMESTAMP = \"LocalDateTime\"\n",
+					"COL_LOCAL_TIMESTAMP_WEEK_AGO = \"LocalDateTimeWeekAgo\"\n",
+					"\n",
+					"# Kolom lalu lintas\n",
+					"COL_JAMS_DELAY = \"JamsDelay\"\n",
+					"COL_TRAFFIC_INDEX_LIVE = \"TrafficIndexLive\"\n",
+					"COL_JAMS_COUNT = \"JamsCount\"\n",
+					"COL_TRAFFIC_INDEX_WEEK_AGO = \"TrafficIndexWeekAgo\"\n",
+					"\n",
+					"# Kolom waktu tempuh\n",
+					"COL_TRAVEL_TIME_LIVE = \"TravelTimeLivePer10KmsMins\"\n",
+					"COL_TRAVEL_TIME_HISTORIC = \"TravelTimeHistoricPer10KmsMins\"\n",
+					"COL_MINS_DELAY = \"MinsDelay\"\n",
+					"\n",
+					"# Kolom tambahan\n",
+					"COL_WEEK_AGO = \"WeekAgo\"\n",
+					"\n",
+					"# Kolom partisi\n",
+					"COL_YEAR = \"year\"\n",
+					"COL_MONTH = \"month\"\n",
+					"\n",
+					"# Tidak tersedia pada dataset ini\n",
+					"COL_CURRENT_SPEED = None\n",
+					"COL_FREE_FLOW_SPEED = None\n",
+					"COL_CURRENT_TRAVEL_TIME = None\n",
+					"COL_FREE_FLOW_TRAVEL_TIME = None\n",
+					"COL_CONFIDENCE = None\n",
+					"COL_ROAD_CLOSURE = None\n",
+					"COL_FRC = None\n",
+					"COL_SEGMENT_ID = None\n",
+					"COL_COORDINATES = None\n",
+					"\n",
+					"# Validasi kolom wajib\n",
+					"def require_column(df, col_name, logical_name):\n",
+					"    if col_name is None or col_name not in df.columns:\n",
+					"        raise ValueError(\n",
+					"            f\"Kolom {logical_name} tidak ditemukan: {col_name}\"\n",
+					"        )\n",
+					"\n",
+					"require_column(df_bronze, COL_COUNTRY, \"Country\")\n",
+					"require_column(df_bronze, COL_CITY, \"City\")\n",
+					"require_column(df_bronze, COL_TIMESTAMP, \"UpdateTimeUTC\")\n",
+					"require_column(df_bronze, COL_JAMS_COUNT, \"JamsCount\")\n",
+					"\n",
+					"print(\"Pemetaan kolom berhasil.\")"
+				],
+				"execution_count": 26
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Standarisasi nama, tipe data, dan nilai kategori"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql import functions as F\n",
+					"\n",
+					"# 1. Standarisasi Country dan City\n",
+					"df_work = (\n",
+					"    df_bronze\n",
+					"    .withColumn(\n",
+					"        \"Country\",\n",
+					"        F.upper(F.trim(F.col(COL_COUNTRY).cast(\"string\")))\n",
+					"    )\n",
+					"    .withColumn(\n",
+					"        \"City\",\n",
+					"        F.lower(F.trim(F.col(COL_CITY).cast(\"string\")))\n",
+					"    )\n",
+					")\n",
+					"\n",
+					"# 2. Konversi kolom timestamp\n",
+					"TIMESTAMP_COLUMNS = [\n",
+					"    \"UpdateTimeUTC\",\n",
+					"    \"LocalDateTime\",\n",
+					"    \"LocalDateTimeWeekAgo\"\n",
+					"]\n",
+					"\n",
+					"for c in TIMESTAMP_COLUMNS:\n",
+					"    if c in df_work.columns:\n",
+					"        df_work = df_work.withColumn(\n",
+					"            c,\n",
+					"            F.to_timestamp(\n",
+					"                F.col(c),\n",
+					"                \"yyyy-MM-dd HH:mm:ss\"\n",
+					"            )\n",
+					"        )\n",
+					"\n",
+					"# 3. Konversi JamsCount menjadi integer\n",
+					"df_work = df_work.withColumn(\n",
+					"    \"JamsCount\",\n",
+					"    F.col(\"JamsCount\").cast(\"int\")\n",
+					")\n",
+					"\n",
+					"# 4. Konversi kolom numerik menjadi double\n",
+					"DOUBLE_COLUMNS = [\n",
+					"    \"JamsDelay\",\n",
+					"    \"TrafficIndexLive\",\n",
+					"    \"TrafficIndexWeekAgo\",\n",
+					"    \"TravelTimeLivePer10KmsMins\",\n",
+					"    \"TravelTimeHistoricPer10KmsMins\",\n",
+					"    \"MinsDelay\"\n",
+					"]\n",
+					"\n",
+					"for c in DOUBLE_COLUMNS:\n",
+					"    if c in df_work.columns:\n",
+					"        df_work = df_work.withColumn(\n",
+					"            c,\n",
+					"            F.col(c).cast(\"double\")\n",
+					"        )\n",
+					"\n",
+					"# 5. Pastikan kolom partisi bertipe integer\n",
+					"df_work = (\n",
+					"    df_work\n",
+					"    .withColumn(\"year\", F.col(\"year\").cast(\"int\"))\n",
+					"    .withColumn(\"month\", F.col(\"month\").cast(\"int\"))\n",
+					")\n",
+					"\n",
+					"# 6. Tambahkan waktu preprocessing\n",
+					"df_work = df_work.withColumn(\n",
+					"    \"processed_at_utc\",\n",
+					"    F.current_timestamp()\n",
+					")\n",
+					"\n",
+					"# 7. Periksa hasil\n",
+					"display(df_work.limit(10))\n",
+					"df_work.printSchema()"
+				],
+				"execution_count": 27
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Konversi kolom waktu dan JamsCount"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql import functions as F\n",
+					"\n",
+					"# 1. Standarisasi Country dan City\n",
+					"df_work = (\n",
+					"    df_bronze\n",
+					"    .withColumn(\n",
+					"        \"Country\",\n",
+					"        F.upper(F.trim(F.col(COL_COUNTRY).cast(\"string\")))\n",
+					"    )\n",
+					"    .withColumn(\n",
+					"        \"City\",\n",
+					"        F.lower(F.trim(F.col(COL_CITY).cast(\"string\")))\n",
+					"    )\n",
+					")\n",
+					"\n",
+					"# 2. Konversi kolom waktu dari String menjadi Timestamp\n",
+					"TIMESTAMP_COLUMNS = [\n",
+					"    \"UpdateTimeUTC\",\n",
+					"    \"LocalDateTime\",\n",
+					"    \"LocalDateTimeWeekAgo\"\n",
+					"]\n",
+					"\n",
+					"for c in TIMESTAMP_COLUMNS:\n",
+					"    if c in df_work.columns:\n",
+					"        df_work = df_work.withColumn(\n",
+					"            c,\n",
+					"            F.to_timestamp(\n",
+					"                F.col(c),\n",
+					"                \"yyyy-MM-dd HH:mm:ss\"\n",
+					"            )\n",
+					"        )\n",
+					"\n",
+					"# 3. Konversi JamsCount dari String menjadi Integer\n",
+					"df_work = df_work.withColumn(\n",
+					"    \"JamsCount\",\n",
+					"    F.col(\"JamsCount\").cast(\"int\")\n",
+					")\n",
+					"\n",
+					"# 4. Konversi kolom numerik menjadi Double\n",
+					"DOUBLE_COLUMNS = [\n",
+					"    \"JamsDelay\",\n",
+					"    \"TrafficIndexLive\",\n",
+					"    \"TrafficIndexWeekAgo\",\n",
+					"    \"TravelTimeLivePer10KmsMins\",\n",
+					"    \"TravelTimeHistoricPer10KmsMins\",\n",
+					"    \"MinsDelay\"\n",
+					"]\n",
+					"\n",
+					"for c in DOUBLE_COLUMNS:\n",
+					"    if c in df_work.columns:\n",
+					"        df_work = df_work.withColumn(\n",
+					"            c,\n",
+					"            F.col(c).cast(\"double\")\n",
+					"        )\n",
+					"\n",
+					"# 5. Konversi kolom partisi menjadi Integer\n",
+					"df_work = (\n",
+					"    df_work\n",
+					"    .withColumn(\"year\", F.col(\"year\").cast(\"int\"))\n",
+					"    .withColumn(\"month\", F.col(\"month\").cast(\"int\"))\n",
+					")\n",
+					"\n",
+					"# 6. Tambahkan metadata waktu preprocessing\n",
+					"df_work = df_work.withColumn(\n",
+					"    \"processed_at_utc\",\n",
+					"    F.current_timestamp()\n",
+					")\n",
+					"\n",
+					"# 7. Tampilkan hasil\n",
+					"display(df_work.limit(10))\n",
+					"\n",
+					"# 8. Periksa tipe data\n",
+					"df_work.printSchema()"
+				],
+				"execution_count": 28
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"# Periksa apakah ada nilai yang gagal dikonversi\n",
+					"display(\n",
+					"    df_work.select(\n",
+					"        F.count(\"*\").alias(\"total_rows\"),\n",
+					"\n",
+					"        F.count(\n",
+					"            F.when(F.col(\"UpdateTimeUTC\").isNull(), 1)\n",
+					"        ).alias(\"null_UpdateTimeUTC\"),\n",
+					"\n",
+					"        F.count(\n",
+					"            F.when(F.col(\"LocalDateTime\").isNull(), 1)\n",
+					"        ).alias(\"null_LocalDateTime\"),\n",
+					"\n",
+					"        F.count(\n",
+					"            F.when(F.col(\"LocalDateTimeWeekAgo\").isNull(), 1)\n",
+					"        ).alias(\"null_LocalDateTimeWeekAgo\"),\n",
+					"\n",
+					"        F.count(\n",
+					"            F.when(F.col(\"JamsCount\").isNull(), 1)\n",
+					"        ).alias(\"null_JamsCount\")\n",
+					"    )\n",
+					")"
+				],
+				"execution_count": 29
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Validasi dan pembersihan data"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"# Validasi kolom wajib\n",
+					"required_columns = [\n",
+					"    \"Country\",\n",
+					"    \"City\",\n",
+					"    \"UpdateTimeUTC\",\n",
+					"    \"LocalDateTime\"\n",
+					"]\n",
+					"\n",
+					"for c in required_columns:\n",
+					"    if c not in df_work.columns:\n",
+					"        raise ValueError(f\"Kolom wajib tidak ditemukan: {c}\")\n",
+					"\n",
+					"# Periksa nilai kosong sebelum filtering\n",
+					"print(\"Jumlah baris awal:\", df_work.count())\n",
+					"\n",
+					"display(\n",
+					"    df_work.select([\n",
+					"        F.count(\n",
+					"            F.when(F.col(c).isNull(), 1)\n",
+					"        ).alias(c)\n",
+					"        for c in required_columns\n",
+					"    ])\n",
+					")\n",
+					"\n",
+					"# Hapus baris yang tidak memiliki identitas wilayah dan waktu\n",
+					"df_clean = df_work.filter(\n",
+					"    F.col(\"Country\").isNotNull() &\n",
+					"    (F.col(\"Country\") != \"\") &\n",
+					"    F.col(\"City\").isNotNull() &\n",
+					"    (F.col(\"City\") != \"\") &\n",
+					"    F.col(\"UpdateTimeUTC\").isNotNull() &\n",
+					"    F.col(\"LocalDateTime\").isNotNull()\n",
+					")\n",
+					"\n",
+					"# JamsCount tidak boleh negatif\n",
+					"df_clean = df_clean.filter(\n",
+					"    F.col(\"JamsCount\").isNull() |\n",
+					"    (F.col(\"JamsCount\") >= 0)\n",
+					")\n",
+					"\n",
+					"print(\"Jumlah baris setelah validasi:\", df_clean.count())\n",
+					"\n",
+					"display(df_clean.limit(10))"
+				],
+				"execution_count": 30
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"# Audit nilai null setelah konversi tipe data\n",
+					"cols_to_audit = [c for c in [\n",
+					"    \"UpdateTimeUTC\", \"LocalDateTime\", \"LocalDateTimeWeekAgo\", \"JamsCount\"\n",
+					"] if c in df_clean.columns]\n",
+					"if cols_to_audit:\n",
+					"    display(df_clean.select([\n",
+					"        F.count(F.when(F.col(c).isNull(), 1)).alias(c)\n",
+					"        for c in cols_to_audit\n",
+					"    ]))"
+				],
+				"execution_count": 31
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Deduplikasi"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"DEDUP_KEY_COLUMNS = [\n",
+					"    \"Country\",\n",
+					"    \"City\",\n",
+					"    \"UpdateTimeUTC\"\n",
+					"]\n",
+					"\n",
+					"# Periksa jumlah duplikasi\n",
+					"duplicate_check = (\n",
+					"    df_clean\n",
+					"    .groupBy(*DEDUP_KEY_COLUMNS)\n",
+					"    .count()\n",
+					"    .filter(F.col(\"count\") > 1)\n",
+					")\n",
+					"\n",
+					"display(duplicate_check.limit(20))\n",
+					"\n",
+					"# Hapus duplikasi berdasarkan kunci observasi\n",
+					"df_clean = df_clean.dropDuplicates(DEDUP_KEY_COLUMNS)\n",
+					"\n",
+					"print(\"Jumlah baris setelah deduplikasi:\", df_clean.count())"
+				],
+				"execution_count": 32
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Buat indikator tambahan"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df_silver = (\n",
+					"    df_clean\n",
+					"    .withColumn(\n",
+					"        \"traffic_index_change_vs_week_ago\",\n",
+					"        F.col(\"TrafficIndexLive\") -\n",
+					"        F.col(\"TrafficIndexWeekAgo\")\n",
+					"    )\n",
+					"    .withColumn(\n",
+					"        \"travel_time_change_vs_historic\",\n",
+					"        F.col(\"TravelTimeLivePer10KmsMins\") -\n",
+					"        F.col(\"TravelTimeHistoricPer10KmsMins\")\n",
+					"    )\n",
+					")\n",
+					"\n",
+					"display(df_silver.limit(10))"
+				],
+				"execution_count": 33
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Pemeriksaan cakupan periode"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"# Pemeriksaan jumlah data per bulan\n",
+					"period_check = (\n",
+					"    df_silver\n",
+					"    .groupBy(\"year\", \"month\")\n",
+					"    .agg(\n",
+					"        F.count(\"*\").alias(\"total_records\"),\n",
+					"        F.countDistinct(\"City\").alias(\"total_cities\"),\n",
+					"        F.countDistinct(\"Country\").alias(\"total_countries\")\n",
+					"    )\n",
+					"    .orderBy(\"year\", \"month\")\n",
+					")\n",
+					"\n",
+					"display(period_check)\n",
+					"\n",
+					"\n",
+					"# Pemeriksaan rentang waktu observasi\n",
+					"df_silver.select(\n",
+					"    F.min(\"UpdateTimeUTC\").alias(\"first_update_utc\"),\n",
+					"    F.max(\"UpdateTimeUTC\").alias(\"last_update_utc\"),\n",
+					"    F.min(\"LocalDateTime\").alias(\"first_local_time\"),\n",
+					"    F.max(\"LocalDateTime\").alias(\"last_local_time\")\n",
+					").show(truncate=False)"
+				],
+				"execution_count": 34
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### simpan silver sebagai delta, dipartisi per negara"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Tulis Silver Delta. Untuk full rebuild awal, overwrite.\n",
+					"# Untuk pipeline batch rutin, ubah ke incremental/MERGE agar tidak menulis ulang seluruh historis.\n",
+					"(\n",
+					"    df_silver.write\n",
+					"    .format(\"delta\")\n",
+					"    .mode(\"overwrite\")\n",
+					"    .partitionBy(\"Country\")\n",
+					"    .option(\"overwriteSchema\", \"true\")\n",
+					"    .save(silver_root)\n",
+					")\n",
+					"\n",
+					"print(\"Silver Delta tersimpan:\", silver_root)"
+				],
+				"execution_count": 35
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### optimize dan z-order silver"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"try:\n",
+					"    spark.sql(f\"OPTIMIZE delta.`{silver_root}` ZORDER BY (City)\")\n",
+					"    print(\"OPTIMIZE ZORDER Silver selesai.\")\n",
+					"except Exception as e:\n",
+					"    print(\"OPTIMIZE ZORDER belum didukung atau gagal.\")\n",
+					"    print(str(e)[:1500])"
+				],
+				"execution_count": 36
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_silver_final = spark.read.format(\"delta\").load(silver_root)\n",
+					"\n",
+					"print(\"Total records Silver:\", df_silver_final.count())\n",
+					"df_silver_final.printSchema()"
+				],
+				"execution_count": 37
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### validasi hasil silver"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql import functions as F\n",
+					"\n",
+					"# Membaca kembali data Silver dari ADLS\n",
+					"df_silver_check = spark.read.format(\"delta\").load(silver_root)\n",
+					"\n",
+					"# 1. Memeriksa jumlah data\n",
+					"print(\"Total records Silver:\", df_silver_check.count())\n",
+					"\n",
+					"# 2. Memeriksa skema\n",
+					"df_silver_check.printSchema()\n",
+					"\n",
+					"# 3. Memeriksa nilai null pada kolom penting\n",
+					"display(\n",
+					"    df_silver_check.select(\n",
+					"        *[\n",
+					"            F.count(F.when(F.col(c).isNull(), 1)).alias(c)\n",
+					"            for c in [\n",
+					"                \"Country\", \"City\", \"UpdateTimeUTC\",\n",
+					"                \"LocalDateTime\", \"JamsCount\"\n",
+					"            ]\n",
+					"        ]\n",
+					"    )\n",
+					")\n",
+					"\n",
+					"# 4. Memeriksa rentang waktu\n",
+					"df_silver_check.select(\n",
+					"    F.min(\"UpdateTimeUTC\").alias(\"first_update\"),\n",
+					"    F.max(\"UpdateTimeUTC\").alias(\"last_update\")\n",
+					").show(truncate=False)\n",
+					"\n",
+					"# 5. Memeriksa jumlah data per negara\n",
+					"display(\n",
+					"    df_silver_check.groupBy(\"Country\")\n",
+					"    .count()\n",
+					"    .orderBy(\"Country\")\n",
+					")"
+				],
+				"execution_count": 38
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### buat gold (agregasi lalu lintas per kota dan jam/bulan)"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"gold_source = (\n",
+					"    df_silver\n",
+					"    .withColumn(\n",
+					"        \"observation_hour\",\n",
+					"        F.date_trunc(\"hour\", F.col(\"LocalDateTime\"))\n",
+					"    )\n",
+					")\n",
+					"\n",
+					"gold_traffic_city = (\n",
+					"    gold_source\n",
+					"    .groupBy(\n",
+					"        \"Country\",\n",
+					"        \"City\",\n",
+					"        \"observation_hour\"\n",
+					"    )\n",
+					"    .agg(\n",
+					"        F.avg(\"TrafficIndexLive\").alias(\"avg_traffic_index\"),\n",
+					"\n",
+					"        F.avg(\"TrafficIndexWeekAgo\").alias(\n",
+					"            \"avg_traffic_index_week_ago\"\n",
+					"        ),\n",
+					"\n",
+					"        F.avg(\"JamsCount\").alias(\"avg_jams_count\"),\n",
+					"\n",
+					"        F.avg(\"JamsDelay\").alias(\"avg_jams_delay\"),\n",
+					"\n",
+					"        F.avg(\"MinsDelay\").alias(\"avg_mins_delay\"),\n",
+					"\n",
+					"        F.avg(\"TravelTimeLivePer10KmsMins\").alias(\n",
+					"            \"avg_travel_time_live\"\n",
+					"        ),\n",
+					"\n",
+					"        F.avg(\"TravelTimeHistoricPer10KmsMins\").alias(\n",
+					"            \"avg_travel_time_historic\"\n",
+					"        ),\n",
+					"\n",
+					"        F.avg(\"traffic_index_change_vs_week_ago\").alias(\n",
+					"            \"avg_traffic_index_change\"\n",
+					"        ),\n",
+					"\n",
+					"        F.count(\"*\").alias(\"total_observations\")\n",
+					"    )\n",
+					"    .orderBy(\"Country\", \"City\", \"observation_hour\")\n",
+					")\n",
+					"\n",
+					"display(gold_traffic_city.limit(20))"
+				],
+				"execution_count": 39
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Gold features untuk ML"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"window_spec = (\n",
+					"    Window\n",
+					"    .partitionBy(\"Country\", \"City\")\n",
+					"    .orderBy(\"observation_hour\")\n",
+					")\n",
+					"\n",
+					"gold_traffic_features = (\n",
+					"    gold_traffic_city\n",
+					"    .withColumn(\n",
+					"        \"previous_traffic_index\",\n",
+					"        F.lag(\"avg_traffic_index\", 1).over(window_spec)\n",
+					"    )\n",
+					"    .withColumn(\n",
+					"        \"previous_jams_count\",\n",
+					"        F.lag(\"avg_jams_count\", 1).over(window_spec)\n",
+					"    )\n",
+					"    .withColumn(\n",
+					"        \"previous_mins_delay\",\n",
+					"        F.lag(\"avg_mins_delay\", 1).over(window_spec)\n",
+					"    )\n",
+					"    .withColumn(\n",
+					"        \"traffic_index_next_observation\",\n",
+					"        F.lead(\"avg_traffic_index\", 1).over(window_spec)\n",
+					"    )\n",
+					"    .withColumn(\n",
+					"        \"hour_of_day\",\n",
+					"        F.hour(\"observation_hour\")\n",
+					"    )\n",
+					"    .withColumn(\n",
+					"        \"day_of_week\",\n",
+					"        F.dayofweek(\"observation_hour\")\n",
+					"    )\n",
+					")\n",
+					"\n",
+					"display(gold_traffic_features.limit(20))"
+				],
+				"execution_count": 40
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### simpan gold sebagai delta"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"gold_city_path = f\"{gold_root}/traffic_city\"\n",
+					"\n",
+					"(\n",
+					"    gold_traffic_city.write\n",
+					"    .format(\"delta\")\n",
+					"    .mode(\"overwrite\")\n",
+					"    .option(\"overwriteSchema\", \"true\")\n",
+					"    .partitionBy(\"Country\")\n",
+					"    .save(gold_city_path)\n",
+					")\n",
+					"\n",
+					"gold_features_path = f\"{gold_root}/traffic_features\"\n",
+					"\n",
+					"(\n",
+					"    gold_traffic_features.write\n",
+					"    .format(\"delta\")\n",
+					"    .mode(\"overwrite\")\n",
+					"    .option(\"overwriteSchema\", \"true\")\n",
+					"    .partitionBy(\"Country\")\n",
+					"    .save(gold_features_path)\n",
+					")\n",
+					"\n",
+					"print(\"Gold berhasil disimpan.\")"
+				],
+				"execution_count": 41
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### optimize dan z-order gold"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"gold_paths = [\n",
+					"    gold_city_path,\n",
+					"    gold_features_path\n",
+					"]\n",
+					"\n",
+					"for path in gold_paths:\n",
+					"    try:\n",
+					"        spark.sql(\n",
+					"            f\"OPTIMIZE delta.`{path}` ZORDER BY (City)\"\n",
+					"        )\n",
+					"        print(\"Optimasi berhasil:\", path)\n",
+					"\n",
+					"    except Exception as e:\n",
+					"        print(\"Optimasi gagal atau tidak didukung:\", path)\n",
+					"        print(str(e)[:1000])"
+				],
+				"execution_count": 42
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### validasi hasil gold"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"gold_city_path = f\"{gold_root}/traffic_city\"\n",
+					"\n",
+					"df_gold_city_check = spark.read.format(\"delta\").load(gold_city_path)\n",
+					"\n",
+					"print(\"Total records Gold Traffic City:\", df_gold_city_check.count())\n",
+					"\n",
+					"df_gold_city_check.printSchema()\n",
+					"\n",
+					"display(df_gold_city_check.limit(10))\n",
+					"\n",
+					"display(\n",
+					"    df_gold_city_check.groupBy(\"Country\")\n",
+					"    .count()\n",
+					"    .orderBy(\"Country\")\n",
+					")"
+				],
+				"execution_count": 44
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"gold_features_path = f\"{gold_root}/traffic_features\"\n",
+					"\n",
+					"df_gold_features_check = spark.read.format(\"delta\").load(gold_features_path)\n",
+					"\n",
+					"print(\"Total records Gold Traffic Features:\", df_gold_features_check.count())\n",
+					"\n",
+					"df_gold_features_check.printSchema()\n",
+					"\n",
+					"display(df_gold_features_check.limit(10))\n",
+					"\n",
+					"# Memeriksa ketersediaan fitur dan target prediksi\n",
+					"display(\n",
+					"    df_gold_features_check.select(\n",
+					"        F.count(\"*\").alias(\"total_records\"),\n",
+					"        F.count(\"previous_traffic_index\").alias(\"available_previous_index\"),\n",
+					"        F.count(\"traffic_index_next_observation\").alias(\"available_target\")\n",
+					"    )\n",
+					")"
+				],
+				"execution_count": 45
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### stop session"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"mssparkutils.session.stop()"
+				],
+				"execution_count": 46
+			}
+		]
+	}
+}
