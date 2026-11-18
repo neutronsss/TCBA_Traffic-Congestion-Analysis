@@ -1,0 +1,3854 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "synapseprojek"
+		},
+		"synapseprojek-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'synapseprojek-WorkspaceDefaultSqlServer'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapseprojek.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"synapseprojek-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adls1tcba.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/synapseprojek-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('synapseprojek-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/synapseprojek-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('synapseprojek-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- 1. Database dan sumber data\n\nUSE synapseprojek;\nGO\n\nIF NOT EXISTS (\n    SELECT 1 FROM sys.symmetric_keys\n    WHERE name = N'##MS_DatabaseMasterKey##'\n)\n    CREATE MASTER KEY;\nGO\n\nIF NOT EXISTS (\n    SELECT 1 FROM sys.database_scoped_credentials\n    WHERE name = N'syn_asprak_identity'\n)\n    CREATE DATABASE SCOPED CREDENTIAL syn_asprak_identity\n    WITH IDENTITY = 'Managed Identity';\nGO\n\nIF NOT EXISTS (\n    SELECT 1 FROM sys.external_data_sources\n    WHERE name = N'ds_datacuaca_curated'\n)\n    CREATE EXTERNAL DATA SOURCE ds_datacuaca_curated\n    WITH (\n        LOCATION = 'https://adls1tcba.dfs.core.windows.net/curated',\n        CREDENTIAL = syn_asprak_identity\n    );\nGO\n\nSELECT TOP (10) *\nFROM OPENROWSET(\n    BULK 'pertemuan8/C_delta_kota_bulan',\n    DATA_SOURCE = 'ds_datacuaca_curated',\n    FORMAT = 'DELTA'\n) AS r;\nGO\n\n-- 2. View polusi dan cuaca\n\nCREATE OR ALTER VIEW dbo.vw_polusi_cuaca AS\nSELECT *\nFROM OPENROWSET(\n    BULK 'pertemuan8/C_delta_kota_bulan',\n    DATA_SOURCE = 'ds_datacuaca_curated',\n    FORMAT = 'DELTA'\n)\nWITH (\n    kota                 VARCHAR(20),\n    tanggal              DATE,\n    waktu                DATETIME2,\n    jam                  INT,\n    bulan                VARCHAR(7),\n    pm10_ug_m3           FLOAT,\n    pm2_5_ug_m3          FLOAT,\n    no2_ug_m3            FLOAT,\n    so2_ug_m3            FLOAT,\n    o3_ug_m3             FLOAT,\n    co_ug_m3             FLOAT,\n    temperature_2m       FLOAT,\n    relative_humidity_2m FLOAT,\n    precipitation        FLOAT,\n    wind_speed_10m       FLOAT,\n    kategori_pm25        VARCHAR(30)\n) AS r;\nGO\n\nSELECT name FROM sys.views;\n\nSELECT TOP (10) * FROM dbo.vw_polusi_cuaca;\nGO\n\n-- 3. View koordinat kota\n\nCREATE OR ALTER VIEW dbo.vw_kota AS\nSELECT *\nFROM (VALUES\n    ('bandung',   'Bandung',   -6.9175, 107.6191),\n    ('denpasar',  'Denpasar',  -8.6705, 115.2126),\n    ('jakarta',   'Jakarta',   -6.2088, 106.8456),\n    ('semarang',  'Semarang',  -6.9667, 110.4167),\n    ('surabaya',  'Surabaya',  -7.2575, 112.7521),\n    ('surakarta', 'Surakarta', -7.5755, 110.8243)\n) AS k(kota, nama_kota, latitude, longitude);\nGO\n\nSELECT * FROM dbo.vw_kota;\nGO\n\n-- 4. Uji partition pruning\n\nSELECT COUNT(*) AS total_baris\nFROM dbo.vw_polusi_cuaca;\n\nSELECT COUNT(*) AS baris_jakarta_maret\nFROM dbo.vw_polusi_cuaca\nWHERE kota = 'jakarta'\n  AND tanggal BETWEEN '2026-03-01' AND '2026-03-31';",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "synapseprojek",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/external')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE DATABASE synapseprojek\n\nCREATE EXTERNAL DATA SOURCE data_cuaca\nWITH (\n    LOCATION = 'abfss://datacuaca@adls1tcba.dfs.core.windows.net'\n);\n\n-- Membuat external file format \n\nCREATE EXTERNAL FILE FORMAT AirSenseCSV \nWITH ( \n   FORMAT_TYPE = DELIMITEDTEXT, \n   FORMAT_OPTIONS ( \n       FIELD_TERMINATOR = ',', \n       STRING_DELIMITER = '\"', \n       FIRST_ROW = 2, \n       PARSER_VERSION = '2.0' \n   ) \n); \nGO \n\nSELECT\n    name,\n    location\nFROM sys.external_data_sources\n\n-- 1. Buat external table sederhana di atas data AQI 6 kota, lalu tampilkan isinya.\n\n-- surakarta \nCREATE EXTERNAL TABLE dbo.kualitas_udara_surakarta \n( \n   waktu        NVARCHAR(50), \n   pm10_ug_m3   FLOAT, \n   pm2_5_ug_m3  FLOAT, \n   no2_ug_m3    FLOAT, \n   so2_ug_m3    FLOAT, \n   o3_ug_m3     FLOAT, \n   co_ug_m3     FLOAT \n) \nWITH \n( \n   LOCATION = '/raw/data/surakarta/01/', \n   DATA_SOURCE = data_cuaca, \n   FILE_FORMAT = AirSenseCSV\n);\nGO\nSELECT TOP 20 * \nFROM dbo.kualitas_udara_surakarta; \nGO\n\n-- denpasar \nCREATE EXTERNAL TABLE dbo.kualitas_udara_denpasar \n( \n   waktu        NVARCHAR(50), \n   pm10_ug_m3   FLOAT, \n   pm2_5_ug_m3  FLOAT, \n   no2_ug_m3    FLOAT, \n   so2_ug_m3    FLOAT, \n   o3_ug_m3     FLOAT, \n   co_ug_m3     FLOAT \n) \nWITH \n( \n   LOCATION = '/raw/data/denpasar/01/', \n   DATA_SOURCE = data_cuaca, \n   FILE_FORMAT = AirSenseCSV \n);\nGO\nSELECT TOP 20 * \nFROM dbo.kualitas_udara_denpasar;\nGO\n\n -- bandung \nCREATE EXTERNAL TABLE dbo.kualitas_udara_bandung \n( \n   waktu        NVARCHAR(50), \n   pm10_ug_m3   FLOAT, \n   pm2_5_ug_m3  FLOAT, \n   no2_ug_m3    FLOAT, \n   so2_ug_m3    FLOAT, \n   o3_ug_m3     FLOAT, \n   co_ug_m3     FLOAT \n) \nWITH\n( \n   LOCATION = '/raw/data/bandung/01/', \n   DATA_SOURCE = data_cuaca, \n   FILE_FORMAT = AirSenseCSV \n); \nGO\nSELECT TOP 20 * FROM dbo.kualitas_udara_bandung;\nGO\n\n-- Jakarta\nCREATE EXTERNAL TABLE dbo.kualitas_udara_jakarta (\n    waktu NVARCHAR(50),\n    pm10_ug_m3 FLOAT,\n    pm2_5_ug_m3 FLOAT,\n    no2_ug_m3 FLOAT,\n    so2_ug_m3 FLOAT,\n    o3_ug_m3 FLOAT,\n    co_ug_m3 FLOAT\n)\nWITH (\n    LOCATION = '/raw/data/jakarta/01/',\n    DATA_SOURCE = data_cuaca,\n    FILE_FORMAT = AirSenseCSV\n);\nGO\nSELECT TOP 20 * FROM dbo.kualitas_udara_jakarta;\nGO\n\n-- Surabaya\nCREATE EXTERNAL TABLE dbo.kualitas_udara_surabaya (\n    waktu NVARCHAR(50),\n    pm10_ug_m3 FLOAT,\n    pm2_5_ug_m3 FLOAT,\n    no2_ug_m3 FLOAT,\n    so2_ug_m3 FLOAT,\n    o3_ug_m3 FLOAT,\n    co_ug_m3 FLOAT\n)\nWITH (\n    LOCATION = '/raw/data/surabaya/01/',\n    DATA_SOURCE = data_cuaca,\n    FILE_FORMAT = AirSenseCSV\n);\nGO\nSELECT TOP 20 * FROM dbo.kualitas_udara_surabaya;\nGO\n\n-- Semarang\nCREATE EXTERNAL TABLE dbo.kualitas_udara_semarang (\n    waktu NVARCHAR(50),\n    pm10_ug_m3 FLOAT,\n    pm2_5_ug_m3 FLOAT,\n    no2_ug_m3 FLOAT,\n    so2_ug_m3 FLOAT,\n    o3_ug_m3 FLOAT,\n    co_ug_m3 FLOAT\n)\nWITH (\n    LOCATION = '/raw/data/semarang/01/',\n    DATA_SOURCE = data_cuaca,\n    FILE_FORMAT = AirSenseCSV\n);\nGO\nSELECT TOP 20 * FROM dbo.kualitas_udara_semarang;\nGO\n\n-- 2. Hitung rata-rata, maksimum, dan minimum AQI per kota, serta tambahkan\n--    1 query agregrasi bebas sesuai kreatifitas kalian\n\nDROP VIEW dbo.v_gabungan;\n\nCREATE OR ALTER VIEW dbo.v_gabungan AS\nSELECT \n    t.filepath(1) AS kota,\n    CAST(t.waktu AS DATETIME2) AS waktu_dt,\n    t.pm10_ug_m3, \n    t.pm2_5_ug_m3, \n    t.no2_ug_m3, \n    t.so2_ug_m3, \n    t.o3_ug_m3, \n    t.co_ug_m3\nFROM \n    OPENROWSET(\n        BULK '/raw/data/*/*/*.csv',\n        DATA_SOURCE = 'data_cuaca',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        FIRSTROW = 2\n    ) \n    WITH (\n        waktu NVARCHAR(50),\n        pm10_ug_m3 FLOAT,\n        pm2_5_ug_m3 FLOAT,\n        no2_ug_m3 FLOAT,\n        so2_ug_m3 FLOAT,\n        o3_ug_m3 FLOAT,\n        co_ug_m3 FLOAT\n    ) AS t;\nGO\n\n -- rata-rata, maksimum, minimum per kota \nSELECT \n    kota,\n    ROUND(AVG(pm2_5_ug_m3), 2) AS avg_pm2_5,\n    MAX(pm2_5_ug_m3) AS max_pm2_5,\n    MIN(pm2_5_ug_m3) AS min_pm2_5,\n    ROUND(AVG(pm10_ug_m3), 2) AS avg_pm10,\n    MAX(pm10_ug_m3) AS max_pm10,\n    MIN(pm10_ug_m3) AS min_pm10,\n    ROUND(AVG(no2_ug_m3), 2) AS avg_no2,\n    MAX(no2_ug_m3) AS max_no2,\n    MIN(no2_ug_m3) AS min_no2,\n    ROUND(AVG(so2_ug_m3), 2) AS avg_so2,\n    MAX(so2_ug_m3) AS max_so2,\n    MIN(so2_ug_m3) AS min_so2,\n    ROUND(AVG(o3_ug_m3), 2) AS avg_o3,\n    MAX(o3_ug_m3) AS max_o3,\n    MIN(o3_ug_m3) AS min_o3,\n    ROUND(AVG(co_ug_m3), 2) AS avg_co,\n    MAX(co_ug_m3) AS max_co,\n    MIN(co_ug_m3) AS min_co\nFROM dbo.v_gabungan\nGROUP BY kota\nORDER BY kota;\n\n-- peringkat kota dengan total populasi (akumulasi CO dan SO2) terparah\nSELECT TOP 3\n    kota,\n    ROUND(SUM(co_ug_m3 + so2_ug_m3), 2) AS total_polusi_gas\nFROM dbo.v_gabungan\nGROUP BY kota\nORDER BY total_polusi_gas DESC;\n\n-- 3. Tentukan kota dengan rata-rata AQI tertinggi selama bulan Januari 2026\nSELECT\n    kota,\n    ROUND (AVG (pm2_5_ug_m3), 2) AS avg_pm2_5,\n    ROUND (AVG (pm10_ug_m3), 2) AS avg_pm10,\n    ROUND (AVG (no2_ug_m3), 2) AS avg_no2,\n    ROUND (AVG (so2_ug_m3), 2) AS avg_so2,\n    ROUND (AVG (o3_ug_m3), 2) AS avg_o3,\n    ROUND (AVG (co_ug_m3), 2) AS avg_co\nFROM dbo.v_gabungan\nWHERE waktu_dt >= '2026-01-01' AND waktu_dt < '2026-02-01'\nGROUP BY kota\nORDER BY avg_pm2_5 DESC;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "synapseprojek",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/openrowset')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://adls1tcba.dfs.core.windows.net/datacuaca/raw/surakarta/2026/kualitas_udara_surakarta.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "kelompoksyanpse",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"runAsWorkspaceSystemIdentity": false,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "64f37717-6c8b-423b-84e1-3c88f8cfc191"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1",
+						"state": {
+							"5a5f422e-2d6e-40bc-a403-f28e647baeb3": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "bandung",
+												"1": "6144"
+											},
+											{
+												"0": "denpasar",
+												"1": "6144"
+											},
+											{
+												"0": "jakarta",
+												"1": "6144"
+											},
+											{
+												"0": "semarang",
+												"1": "6144"
+											},
+											{
+												"0": "surabaya",
+												"1": "6144"
+											},
+											{
+												"0": "surakarta",
+												"1": "6144"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "kota",
+												"type": "string"
+											},
+											{
+												"key": "1",
+												"name": "count",
+												"type": "bigint"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"1"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"1a3bac48-59fc-4411-9a99-dd7469442143": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "2026-01-01T00:00",
+												"1": "21.4",
+												"2": "90",
+												"3": "0.4",
+												"4": "6.2",
+												"5": "bandung"
+											},
+											{
+												"0": "2026-01-01T01:00",
+												"1": "21.4",
+												"2": "88",
+												"3": "0.4",
+												"4": "4.8",
+												"5": "bandung"
+											},
+											{
+												"0": "2026-01-01T02:00",
+												"1": "20.4",
+												"2": "88",
+												"3": "0.2",
+												"4": "3.8",
+												"5": "bandung"
+											},
+											{
+												"0": "2026-01-01T03:00",
+												"1": "19.9",
+												"2": "85",
+												"3": "0.1",
+												"4": "3.3",
+												"5": "bandung"
+											},
+											{
+												"0": "2026-01-01T04:00",
+												"1": "20.0",
+												"2": "83",
+												"3": "0.0",
+												"4": "2.6",
+												"5": "bandung"
+											},
+											{
+												"0": "2026-01-01T05:00",
+												"1": "19.8",
+												"2": "84",
+												"3": "0.0",
+												"4": "4.7",
+												"5": "bandung"
+											},
+											{
+												"0": "2026-01-01T06:00",
+												"1": "20.3",
+												"2": "83",
+												"3": "0.0",
+												"4": "4.9",
+												"5": "bandung"
+											},
+											{
+												"0": "2026-01-01T07:00",
+												"1": "21.4",
+												"2": "89",
+												"3": "0.0",
+												"4": "1.9",
+												"5": "bandung"
+											},
+											{
+												"0": "2026-01-01T08:00",
+												"1": "23.6",
+												"2": "78",
+												"3": "0.0",
+												"4": "6.1",
+												"5": "bandung"
+											},
+											{
+												"0": "2026-01-01T09:00",
+												"1": "24.5",
+												"2": "75",
+												"3": "0.1",
+												"4": "11.6",
+												"5": "bandung"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "time",
+												"type": "string"
+											},
+											{
+												"key": "1",
+												"name": "temperature_2m",
+												"type": "double"
+											},
+											{
+												"key": "2",
+												"name": "relative_humidity_2m",
+												"type": "bigint"
+											},
+											{
+												"key": "3",
+												"name": "precipitation",
+												"type": "double"
+											},
+											{
+												"key": "4",
+												"name": "wind_speed_10m",
+												"type": "double"
+											},
+											{
+												"key": "5",
+												"name": "kota",
+												"type": "string"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"1"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"0468495e-ea31-467c-89bb-20b813f7a13e": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "0",
+												"1": "0",
+												"2": "0",
+												"3": "0",
+												"4": "0",
+												"5": "0",
+												"6": "0",
+												"7": "0"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "waktu",
+												"type": "bigint"
+											},
+											{
+												"key": "1",
+												"name": "pm10_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "2",
+												"name": "pm2_5_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "3",
+												"name": "no2_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "4",
+												"name": "so2_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "5",
+												"name": "o3_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "6",
+												"name": "co_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "7",
+												"name": "kota",
+												"type": "bigint"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"1"
+											],
+											"seriesFieldKeys": [
+												"0"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"d1be5fba-07d3-42ec-80d9-d39223e67537": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "0",
+												"1": "0",
+												"2": "0",
+												"3": "0",
+												"4": "0",
+												"5": "0"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "time",
+												"type": "bigint"
+											},
+											{
+												"key": "1",
+												"name": "temperature_2m",
+												"type": "bigint"
+											},
+											{
+												"key": "2",
+												"name": "relative_humidity_2m",
+												"type": "bigint"
+											},
+											{
+												"key": "3",
+												"name": "precipitation",
+												"type": "bigint"
+											},
+											{
+												"key": "4",
+												"name": "wind_speed_10m",
+												"type": "bigint"
+											},
+											{
+												"key": "5",
+												"name": "kota",
+												"type": "bigint"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"1"
+											],
+											"seriesFieldKeys": [
+												"0"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"5609d2f9-93b6-4ed7-b856-3edc55f14949": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "0",
+												"1": "0",
+												"2": "0",
+												"3": "0",
+												"4": "0",
+												"5": "0",
+												"6": "0",
+												"7": "0"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "waktu",
+												"type": "bigint"
+											},
+											{
+												"key": "1",
+												"name": "pm10_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "2",
+												"name": "pm2_5_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "3",
+												"name": "no2_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "4",
+												"name": "so2_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "5",
+												"name": "o3_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "6",
+												"name": "co_ug_m3",
+												"type": "bigint"
+											},
+											{
+												"key": "7",
+												"name": "kota",
+												"type": "bigint"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"1"
+											],
+											"seriesFieldKeys": [
+												"0"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"510303f8-776f-4496-9330-535cca91474f": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "bandung",
+												"1": "2026-01-01 00:00:00",
+												"2": "48.1",
+												"3": "47.7",
+												"4": "44.0",
+												"5": "23.7",
+												"6": "8.0",
+												"7": "1020.0",
+												"8": "21.4",
+												"9": "90.0",
+												"10": "0.4",
+												"11": "6.2",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 01:00:00",
+												"2": "50.9",
+												"3": "50.2",
+												"4": "35.7",
+												"5": "24.8",
+												"6": "25.0",
+												"7": "869.0",
+												"8": "21.4",
+												"9": "88.0",
+												"10": "0.4",
+												"11": "4.8",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 02:00:00",
+												"2": "26.0",
+												"3": "25.2",
+												"4": "24.2",
+												"5": "26.2",
+												"6": "49.0",
+												"7": "565.0",
+												"8": "20.4",
+												"9": "88.0",
+												"10": "0.2",
+												"11": "3.8",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 03:00:00",
+												"2": "21.9",
+												"3": "21.7",
+												"4": "15.7",
+												"5": "27.0",
+												"6": "69.0",
+												"7": "335.0",
+												"8": "19.9",
+												"9": "85.0",
+												"10": "0.1",
+												"11": "3.3",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 04:00:00",
+												"2": "11.7",
+												"3": "11.7",
+												"4": "12.7",
+												"5": "26.3",
+												"6": "82.0",
+												"7": "265.0",
+												"8": "20.0",
+												"9": "83.0",
+												"10": "0.0",
+												"11": "2.6",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 05:00:00",
+												"2": "18.3",
+												"3": "18.3",
+												"4": "12.7",
+												"5": "24.9",
+												"6": "92.0",
+												"7": "268.0",
+												"8": "19.8",
+												"9": "84.0",
+												"10": "0.0",
+												"11": "4.7",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 06:00:00",
+												"2": "26.1",
+												"3": "26.1",
+												"4": "13.6",
+												"5": "24.6",
+												"6": "100.0",
+												"7": "318.0",
+												"8": "20.3",
+												"9": "83.0",
+												"10": "0.0",
+												"11": "4.9",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 07:00:00",
+												"2": "31.5",
+												"3": "31.5",
+												"4": "13.5",
+												"5": "26.2",
+												"6": "108.0",
+												"7": "421.0",
+												"8": "21.4",
+												"9": "89.0",
+												"10": "0.0",
+												"11": "1.9",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 08:00:00",
+												"2": "29.9",
+												"3": "29.9",
+												"4": "14.3",
+												"5": "28.8",
+												"6": "113.0",
+												"7": "569.0",
+												"8": "23.6",
+												"9": "78.0",
+												"10": "0.0",
+												"11": "6.1",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 09:00:00",
+												"2": "30.3",
+												"3": "30.3",
+												"4": "20.5",
+												"5": "32.0",
+												"6": "109.0",
+												"7": "712.0",
+												"8": "24.5",
+												"9": "75.0",
+												"10": "0.1",
+												"11": "11.6",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 10:00:00",
+												"2": "41.7",
+												"3": "41.7",
+												"4": "37.2",
+												"5": "36.3",
+												"6": "87.0",
+												"7": "867.0",
+												"8": "25.0",
+												"9": "73.0",
+												"10": "0.0",
+												"11": "10.9",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 11:00:00",
+												"2": "67.1",
+												"3": "67.1",
+												"4": "59.2",
+												"5": "41.1",
+												"6": "54.0",
+												"7": "1017.0",
+												"8": "26.5",
+												"9": "65.0",
+												"10": "0.1",
+												"11": "13.0",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 12:00:00",
+												"2": "48.2",
+												"3": "47.6",
+												"4": "66.0",
+												"5": "39.2",
+												"6": "7.0",
+												"7": "1062.0",
+												"8": "26.8",
+												"9": "63.0",
+												"10": "0.1",
+												"11": "15.7",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 13:00:00",
+												"2": "62.4",
+												"3": "61.2",
+												"4": "65.2",
+												"5": "40.8",
+												"6": "5.0",
+												"7": "920.0",
+												"8": "26.4",
+												"9": "63.0",
+												"10": "0.2",
+												"11": "17.4",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 14:00:00",
+												"2": "72.9",
+												"3": "71.7",
+												"4": "63.8",
+												"5": "42.8",
+												"6": "3.0",
+												"7": "674.0",
+												"8": "26.0",
+												"9": "66.0",
+												"10": "0.1",
+												"11": "13.8",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 15:00:00",
+												"2": "84.8",
+												"3": "83.6",
+												"4": "61.4",
+												"5": "42.9",
+												"6": "1.0",
+												"7": "470.0",
+												"8": "25.7",
+												"9": "65.0",
+												"10": "0.0",
+												"11": "13.6",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 16:00:00",
+												"2": "100.6",
+												"3": "99.2",
+												"4": "57.3",
+												"5": "39.6",
+												"6": "0.0",
+												"7": "367.0",
+												"8": "23.4",
+												"9": "80.0",
+												"10": "0.3",
+												"11": "10.1",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 17:00:00",
+												"2": "104.8",
+												"3": "103.6",
+												"4": "52.0",
+												"5": "34.5",
+												"6": "0.0",
+												"7": "306.0",
+												"8": "22.6",
+												"9": "85.0",
+												"10": "1.1",
+												"11": "7.8",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 18:00:00",
+												"2": "112.7",
+												"3": "111.5",
+												"4": "46.9",
+												"5": "30.0",
+												"6": "0.0",
+												"7": "261.0",
+												"8": "22.2",
+												"9": "87.0",
+												"10": "0.3",
+												"11": "6.4",
+												"12": "2026-01"
+											},
+											{
+												"0": "bandung",
+												"1": "2026-01-01 19:00:00",
+												"2": "113.6",
+												"3": "112.5",
+												"4": "40.6",
+												"5": "26.5",
+												"6": "0.0",
+												"7": "192.0",
+												"8": "22.1",
+												"9": "87.0",
+												"10": "0.2",
+												"11": "12.0",
+												"12": "2026-01"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "kota",
+												"type": "string"
+											},
+											{
+												"key": "1",
+												"name": "waktu",
+												"type": "timestamp"
+											},
+											{
+												"key": "2",
+												"name": "pm10_ug_m3",
+												"type": "double"
+											},
+											{
+												"key": "3",
+												"name": "pm2_5_ug_m3",
+												"type": "double"
+											},
+											{
+												"key": "4",
+												"name": "no2_ug_m3",
+												"type": "double"
+											},
+											{
+												"key": "5",
+												"name": "so2_ug_m3",
+												"type": "double"
+											},
+											{
+												"key": "6",
+												"name": "o3_ug_m3",
+												"type": "double"
+											},
+											{
+												"key": "7",
+												"name": "co_ug_m3",
+												"type": "double"
+											},
+											{
+												"key": "8",
+												"name": "temperature_2m",
+												"type": "double"
+											},
+											{
+												"key": "9",
+												"name": "relative_humidity_2m",
+												"type": "double"
+											},
+											{
+												"key": "10",
+												"name": "precipitation",
+												"type": "double"
+											},
+											{
+												"key": "11",
+												"name": "wind_speed_10m",
+												"type": "double"
+											},
+											{
+												"key": "12",
+												"name": "bulan",
+												"type": "string"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"2"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"5462ace7-912a-424b-8853-11ffad9fe838": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "bandung",
+												"1": "6144",
+												"2": "68.4",
+												"3": "23.7"
+											},
+											{
+												"0": "denpasar",
+												"1": "6144",
+												"2": "10.9",
+												"3": "26.0"
+											},
+											{
+												"0": "jakarta",
+												"1": "6144",
+												"2": "70.3",
+												"3": "28.1"
+											},
+											{
+												"0": "semarang",
+												"1": "6144",
+												"2": "27.4",
+												"3": "27.8"
+											},
+											{
+												"0": "surabaya",
+												"1": "6144",
+												"2": "33.7",
+												"3": "28.0"
+											},
+											{
+												"0": "surakarta",
+												"1": "6144",
+												"2": "52.6",
+												"3": "26.4"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "kota",
+												"type": "string"
+											},
+											{
+												"key": "1",
+												"name": "jumlah_jam",
+												"type": "bigint"
+											},
+											{
+												"key": "2",
+												"name": "rata_pm25",
+												"type": "double"
+											},
+											{
+												"key": "3",
+												"name": "rata_suhu",
+												"type": "double"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"1"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"6dc917db-4ef7-4335-be9a-fecd5f7e1919": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "3",
+												"1": "2026-11-10 12:28:24.754",
+												"2": "UPDATE",
+												"3": {
+													"numRemovedFiles": "1",
+													"numRemovedBytes": "29168",
+													"numCopiedRows": "0",
+													"numDeletionVectorsAdded": "0",
+													"numDeletionVectorsRemoved": "0",
+													"numAddedChangeFiles": "0",
+													"executionTimeMs": "2016",
+													"numDeletionVectorsUpdated": "0",
+													"scanTimeMs": "884",
+													"numAddedFiles": "1",
+													"numUpdatedRows": "744",
+													"numAddedBytes": "29161",
+													"rewriteTimeMs": "1114"
+												}
+											},
+											{
+												"0": "2",
+												"1": "2026-11-10 12:27:46.795",
+												"2": "WRITE",
+												"3": {
+													"numFiles": "54",
+													"numOutputRows": "36864",
+													"numOutputBytes": "1376900"
+												}
+											},
+											{
+												"0": "1",
+												"1": "2026-11-03 08:28:43.623",
+												"2": "UPDATE",
+												"3": {
+													"numRemovedFiles": "1",
+													"numRemovedBytes": "29105",
+													"numCopiedRows": "0",
+													"numDeletionVectorsAdded": "0",
+													"numDeletionVectorsRemoved": "0",
+													"numAddedChangeFiles": "0",
+													"executionTimeMs": "1822",
+													"numDeletionVectorsUpdated": "0",
+													"scanTimeMs": "734",
+													"numAddedFiles": "1",
+													"numUpdatedRows": "744",
+													"numAddedBytes": "29084",
+													"rewriteTimeMs": "1068"
+												}
+											},
+											{
+												"0": "0",
+												"1": "2026-11-03 08:28:07.008",
+												"2": "WRITE",
+												"3": {
+													"numFiles": "54",
+													"numOutputRows": "36864",
+													"numOutputBytes": "1376586"
+												}
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "version",
+												"type": "bigint"
+											},
+											{
+												"key": "1",
+												"name": "timestamp",
+												"type": "timestamp"
+											},
+											{
+												"key": "2",
+												"name": "operation",
+												"type": "string"
+											},
+											{
+												"key": "3",
+												"name": "operationMetrics",
+												"type": "MapType(StringType,StringType,true)"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"1"
+											],
+											"seriesFieldKeys": [
+												"0"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"b0c6297d-1ad6-48fe-b848-34d6ce939394": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "A. Parquet tanpa partisi",
+												"1": "0.43",
+												"2": "0.51"
+											},
+											{
+												"0": "B. Delta tanpa partisi",
+												"1": "0.54",
+												"2": "0.55"
+											},
+											{
+												"0": "C. Delta kota+bulan",
+												"1": "0.38",
+												"2": "0.43"
+											},
+											{
+												"0": "P5. Parquet partisi kota",
+												"1": "0.4",
+												"2": "0.42"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "skenario",
+												"type": "string"
+											},
+											{
+												"key": "1",
+												"name": "tercepat_dtk",
+												"type": "double"
+											},
+											{
+												"key": "2",
+												"name": "rata2_dtk",
+												"type": "double"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"1"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"19e0c65c-dc1c-48e1-b1f5-e3cb16f6bdd6": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "A. Parquet tanpa partisi",
+												"1": "6",
+												"2": "0.8"
+											},
+											{
+												"0": "B. Delta tanpa partisi",
+												"1": "12",
+												"2": "1.59"
+											},
+											{
+												"0": "C. Delta kota+bulan",
+												"1": "109",
+												"2": "2.65"
+											},
+											{
+												"0": "P5. Parquet partisi kota",
+												"1": "6",
+												"2": "0.76"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "skenario",
+												"type": "string"
+											},
+											{
+												"key": "1",
+												"name": "jumlah_file",
+												"type": "bigint"
+											},
+											{
+												"key": "2",
+												"name": "ukuran_mb",
+												"type": "double"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"1"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"598fcdd1-aef1-4e72-b657-e0c86244e53c": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "A. Parquet tanpa partisi",
+												"1": "query (run 1)",
+												"2": "0.65"
+											},
+											{
+												"0": "A. Parquet tanpa partisi",
+												"1": "query (run 2)",
+												"2": "0.43"
+											},
+											{
+												"0": "A. Parquet tanpa partisi",
+												"1": "query (run 3)",
+												"2": "0.44"
+											},
+											{
+												"0": "A. Parquet tanpa partisi",
+												"1": "tulis",
+												"2": "2.78"
+											},
+											{
+												"0": "B. Delta tanpa partisi",
+												"1": "query (run 1)",
+												"2": "0.55"
+											},
+											{
+												"0": "B. Delta tanpa partisi",
+												"1": "query (run 2)",
+												"2": "0.54"
+											},
+											{
+												"0": "B. Delta tanpa partisi",
+												"1": "query (run 3)",
+												"2": "0.57"
+											},
+											{
+												"0": "B. Delta tanpa partisi",
+												"1": "tulis",
+												"2": "14.33"
+											},
+											{
+												"0": "C. Delta kota+bulan",
+												"1": "query (run 1)",
+												"2": "0.43"
+											},
+											{
+												"0": "C. Delta kota+bulan",
+												"1": "query (run 2)",
+												"2": "0.38"
+											},
+											{
+												"0": "C. Delta kota+bulan",
+												"1": "query (run 3)",
+												"2": "0.47"
+											},
+											{
+												"0": "C. Delta kota+bulan",
+												"1": "tulis",
+												"2": "10.61"
+											},
+											{
+												"0": "D. Tanpa cache",
+												"1": "3 agregasi (run 1)",
+												"2": "3.01"
+											},
+											{
+												"0": "D. Tanpa cache",
+												"1": "3 agregasi (run 2)",
+												"2": "1.54"
+											},
+											{
+												"0": "E. Dengan cache",
+												"1": "3 agregasi (run 1)",
+												"2": "1.07"
+											},
+											{
+												"0": "E. Dengan cache",
+												"1": "3 agregasi (run 2)",
+												"2": "0.93"
+											},
+											{
+												"0": "E. Dengan cache",
+												"1": "isi cache",
+												"2": "0.58"
+											},
+											{
+												"0": "P5. Parquet partisi kota",
+												"1": "query (run 1)",
+												"2": "0.46"
+											},
+											{
+												"0": "P5. Parquet partisi kota",
+												"1": "query (run 2)",
+												"2": "0.41"
+											},
+											{
+												"0": "P5. Parquet partisi kota",
+												"1": "query (run 3)",
+												"2": "0.4"
+											},
+											{
+												"0": "Transformasi",
+												"1": "cache",
+												"2": "7.42"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "skenario",
+												"type": "string"
+											},
+											{
+												"key": "1",
+												"name": "tahap",
+												"type": "string"
+											},
+											{
+												"key": "2",
+												"name": "detik",
+												"type": "double"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala",
+									"wranglerEntryContext": {
+										"dataframeType": "pyspark"
+									}
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"2"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							}
+						}
+					},
+					"enableDebugMode": false,
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3510581a-663b-4789-9da5-5f6371bd3d51/resourceGroups/Project_TCBA/providers/Microsoft.Synapse/workspaces/synapseprojek/bigDataPools/kelompoksyanpse",
+						"name": "kelompoksyanpse",
+						"type": "Spark",
+						"endpoint": "https://synapseprojek.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/kelompoksyanpse",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net",
+							"authHeader": null
+						},
+						"sparkVersion": "3.5",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28,
+						"extraHeader": null
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Pertemuan 5"
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"konfigurasi\n",
+							""
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"from pyspark.sql import functions as F\n",
+							"from pyspark.sql.window import Window\n",
+							"\n",
+							"storage    = \"adls1tcba\"\n",
+							"aqi_path   = f\"abfss://datacuaca@{storage}.dfs.core.windows.net\"\n",
+							"cuaca_path = f\"abfss://cuaca@{storage}.dfs.core.windows.net\"\n",
+							"curated    = f\"abfss://curated@{storage}.dfs.core.windows.net\"\n",
+							"\n",
+							"kota = {\n",
+							"    \"bandung\":   (-6.9175, 107.6191), \"denpasar\":  (-8.6705, 115.2126),\n",
+							"    \"jakarta\":   (-6.2088, 106.8456), \"semarang\":  (-6.9667, 110.4167),\n",
+							"    \"surabaya\":  (-7.2575, 112.7521), \"surakarta\": (-7.5755, 110.8243),\n",
+							"}"
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"baca data semua kota dan bulan sekaligus"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"aqi_raw = (spark.read.option(\"header\", True)\n",
+							"           .csv(f\"{aqi_path}/raw/data/*/*/*.csv\")\n",
+							"           .withColumn(\"file\", F.input_file_name())\n",
+							"           .withColumn(\"kota\", F.regexp_extract(\"file\", r\"/([a-z]+)/\\d{2}/\", 1))\n",
+							"           .drop(\"file\"))\n",
+							"\n",
+							"aqi_raw.printSchema()\n",
+							"display(aqi_raw.groupBy(\"kota\").count().orderBy(\"kota\"))"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"ambil data cuaca per jam dan simpann ke container cuaca"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"import time, requests, pandas as pd\n",
+							"\n",
+							"def ambil_cuaca(lat, lon, percobaan=5):\n",
+							"    for i in range(percobaan):\n",
+							"        try:\n",
+							"            r = requests.get(\"https://archive-api.open-meteo.com/v1/archive\", params={\n",
+							"                \"latitude\": lat, \"longitude\": lon,\n",
+							"                \"start_date\": \"2026-01-01\", \"end_date\": \"2026-09-30\",\n",
+							"                \"hourly\": \"temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m\",\n",
+							"                \"timezone\": \"Asia/Jakarta\"}, timeout=(20, 120))\n",
+							"            r.raise_for_status()\n",
+							"            return pd.DataFrame(r.json()[\"hourly\"])\n",
+							"        except Exception as e:\n",
+							"            print(f\"  percobaan {i+1} gagal: {type(e).__name__}, coba lagi...\")\n",
+							"            time.sleep(5 * (i + 1))\n",
+							"    raise RuntimeError(\"Open-Meteo tidak bisa dihubungi\")\n",
+							"\n",
+							"frames = []\n",
+							"for k, (lat, lon) in kota.items():\n",
+							"    print(\"Ambil cuaca:\", k)\n",
+							"    df = ambil_cuaca(lat, lon)\n",
+							"    df[\"kota\"] = k\n",
+							"    frames.append(df)\n",
+							"    time.sleep(2)\n",
+							"\n",
+							"cuaca_raw = spark.createDataFrame(pd.concat(frames))\n",
+							"print(\"Baris cuaca:\", cuaca_raw.count())\n",
+							"display(cuaca_raw.limit(10))\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"# opsional: simpan ke container cuaca (pastikan container sudah dibuat)\n",
+							"# cuaca_raw.write.mode(\"overwrite\").option(\"header\", True).partitionBy(\"kota\").csv(f\"{cuaca_path}/hourly\")"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"cek missing value"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"def cek_null(df):\n",
+							"    return df.select([F.sum(F.when(F.col(c).isNull() | (F.col(c) == \"\") | (F.col(c) == \"NaN\"), 1)\n",
+							"                      .otherwise(0)).alias(c) for c in df.columns])\n",
+							"\n",
+							"display(cek_null(aqi_raw))\n",
+							"display(cek_null(cuaca_raw))"
+						],
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"casting tipe data"
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"polutan = [\"pm10_ug_m3\", \"pm2_5_ug_m3\", \"no2_ug_m3\", \"so2_ug_m3\", \"o3_ug_m3\", \"co_ug_m3\"]\n",
+							"cuaca_cols = [\"temperature_2m\", \"relative_humidity_2m\", \"precipitation\", \"wind_speed_10m\"]\n",
+							"\n",
+							"aqi = aqi_raw.withColumn(\"waktu\", F.to_timestamp(\"waktu\", \"yyyy-MM-dd HH:mm:ss\"))\n",
+							"for c in polutan:\n",
+							"    aqi = aqi.withColumn(c, F.col(c).cast(\"double\"))\n",
+							"\n",
+							"cuaca = (cuaca_raw.withColumn(\"waktu\", F.to_timestamp(\"time\", \"yyyy-MM-dd'T'HH:mm\"))\n",
+							"                  .drop(\"time\"))\n",
+							"for c in cuaca_cols:\n",
+							"    cuaca = cuaca.withColumn(c, F.col(c).cast(\"double\"))\n",
+							"\n",
+							"aqi.printSchema()\n",
+							"cuaca.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 7
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Cleaning\n",
+							"\n",
+							"Langkah cleaning-nya:\n",
+							"\n",
+							"NaN dan nilai negatif diubah jadi null.\n",
+							"Baris tanpa kota atau waktu dibuang, begitu juga duplikat.\n",
+							"Nilai null diisi rata-rata harian kota tersebut."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"def bersihkan(df, cols):\n",
+							"    for c in cols:\n",
+							"        df = df.withColumn(c, F.when(F.isnan(c) | (F.col(c) < 0), None).otherwise(F.col(c)))\n",
+							"    df = df.dropna(subset=[\"kota\", \"waktu\"]).dropDuplicates([\"kota\", \"waktu\"])\n",
+							"    w = Window.partitionBy(\"kota\", F.to_date(\"waktu\"))\n",
+							"    for c in cols:\n",
+							"        df = df.withColumn(c, F.coalesce(F.col(c), F.round(F.avg(c).over(w), 2)))\n",
+							"    return df.dropna(subset=cols)\n",
+							"\n",
+							"aqi_bersih   = bersihkan(aqi, polutan)\n",
+							"cuaca_bersih = bersihkan(cuaca, cuaca_cols)\n",
+							"\n",
+							"display(cek_null(aqi_bersih))     # screenshot \"sesudah\""
+						],
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"join polusi + cuaca"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"gabung = (aqi_bersih.join(cuaca_bersih, on=[\"kota\", \"waktu\"], how=\"inner\")\n",
+							"          .withColumn(\"bulan\", F.date_format(\"waktu\", \"yyyy-MM\"))\n",
+							"          .orderBy(\"kota\", \"waktu\"))\n",
+							"\n",
+							"print(\"Polusi:\", aqi_bersih.count(), \"| Cuaca:\", cuaca_bersih.count(), \"| Gabung:\", gabung.count())\n",
+							"display(gabung.limit(20))"
+						],
+						"outputs": [],
+						"execution_count": 9
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"simpan ke curated dan verifikasi"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"gabung.write.mode(\"overwrite\").partitionBy(\"kota\").parquet(f\"{curated}/polusi_cuaca\")\n",
+							"\n",
+							"hasil = spark.read.parquet(f\"{curated}/polusi_cuaca\")\n",
+							"display(hasil.groupBy(\"kota\").agg(\n",
+							"    F.count(\"*\").alias(\"jumlah_jam\"),\n",
+							"    F.round(F.avg(\"pm2_5_ug_m3\"), 1).alias(\"rata_pm25\"),\n",
+							"    F.round(F.avg(\"temperature_2m\"), 1).alias(\"rata_suhu\")).orderBy(\"kota\"))"
+						],
+						"outputs": [],
+						"execution_count": 10
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Pertemuan 8"
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Path output dan fungsi pengukur"
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"import time\n",
+							"from delta.tables import DeltaTable\n",
+							"\n",
+							"p8            = f\"{curated}/pertemuan8\"\n",
+							"path_parquet  = f\"{p8}/A_parquet_flat\"\n",
+							"path_delta    = f\"{p8}/B_delta_flat\"\n",
+							"path_partisi  = f\"{p8}/C_delta_kota_bulan\"\n",
+							"path_p5       = f\"{curated}/polusi_cuaca\"\n",
+							"\n",
+							"hasil_ukur, hasil_folder = [], []\n",
+							"\n",
+							"def ukur(skenario, tahap, fn, ulang=1):\n",
+							"    for i in range(ulang):\n",
+							"        t0 = time.time()\n",
+							"        out = fn()\n",
+							"        d = round(time.time() - t0, 2)\n",
+							"        label = tahap if ulang == 1 else f\"{tahap} (run {i+1})\"\n",
+							"        hasil_ukur.append((skenario, label, d))\n",
+							"        print(f\"{skenario} | {label}: {d} dtk\")\n",
+							"    return out\n",
+							"\n",
+							"def info_folder(path):\n",
+							"    n, b = 0, 0\n",
+							"    for f in mssparkutils.fs.ls(path):\n",
+							"        nama = f.name.rstrip(\"/\")\n",
+							"        if nama.startswith(\"_\"):\n",
+							"            continue\n",
+							"        if f.isDir:\n",
+							"            n2, b2 = info_folder(f\"{path}/{nama}\")\n",
+							"            n, b = n + n2, b + b2\n",
+							"        elif nama.endswith(\".parquet\"):\n",
+							"            n, b = n + 1, b + f.size\n",
+							"    return n, b\n",
+							"\n",
+							"def catat_folder(skenario, path):\n",
+							"    n, b = info_folder(path)\n",
+							"    hasil_folder.append((skenario, n, round(b / 1024 / 1024, 2)))\n",
+							"    print(f\"{skenario}: {n} file, {b/1024/1024:.2f} MB\")"
+						],
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Tambah kolom tanggal, jam, kategori PM2.5 lalu cache"
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"data = (gabung\n",
+							"        .withColumn(\"tanggal\", F.to_date(\"waktu\"))\n",
+							"        .withColumn(\"jam\", F.hour(\"waktu\"))\n",
+							"        .withColumn(\"kategori_pm25\",\n",
+							"                    F.when(F.col(\"pm2_5_ug_m3\") <= 15.5, \"baik\")\n",
+							"                     .when(F.col(\"pm2_5_ug_m3\") <= 55.4, \"sedang\")\n",
+							"                     .when(F.col(\"pm2_5_ug_m3\") <= 150.4, \"tidak sehat\")\n",
+							"                     .otherwise(\"sangat tidak sehat\")))\n",
+							"\n",
+							"data.cache()\n",
+							"n = ukur(\"Transformasi\", \"cache\", lambda: data.count())\n",
+							"print(\"Jumlah baris:\", n)"
+						],
+						"outputs": [],
+						"execution_count": 12
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Tulis tiga versi: Parquet, Delta, Delta berpartisi kota + bulan"
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"ukur(\"A. Parquet tanpa partisi\", \"tulis\",\n",
+							"     lambda: data.coalesce(6).write.mode(\"overwrite\").parquet(path_parquet))\n",
+							"ukur(\"B. Delta tanpa partisi\", \"tulis\",\n",
+							"     lambda: data.coalesce(6).write.format(\"delta\").mode(\"overwrite\").save(path_delta))\n",
+							"ukur(\"C. Delta kota+bulan\", \"tulis\",\n",
+							"     lambda: data.repartition(\"kota\", \"bulan\").write.format(\"delta\").mode(\"overwrite\")\n",
+							"                 .partitionBy(\"kota\", \"bulan\").save(path_partisi))\n",
+							"\n",
+							"catat_folder(\"A. Parquet tanpa partisi\", path_parquet)\n",
+							"catat_folder(\"B. Delta tanpa partisi\", path_delta)\n",
+							"catat_folder(\"C. Delta kota+bulan\", path_partisi)\n",
+							"catat_folder(\"P5. Parquet partisi kota\", path_p5)"
+						],
+						"outputs": [],
+						"execution_count": 13
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Query uji: PM2.5 Jakarta bulan Maret"
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"def query_uji(df):\n",
+							"    return (df.filter((F.col(\"kota\") == \"jakarta\") & (F.col(\"bulan\") == \"2026-03\"))\n",
+							"              .groupBy(\"kota\", \"bulan\")\n",
+							"              .agg(F.count(\"*\").alias(\"jam\"),\n",
+							"                   F.round(F.avg(\"pm2_5_ug_m3\"), 2).alias(\"rata_pm25\"),\n",
+							"                   F.max(\"pm2_5_ug_m3\").alias(\"maks_pm25\")))\n",
+							"\n",
+							"skenario = {\n",
+							"    \"P5. Parquet partisi kota\": spark.read.parquet(path_p5),\n",
+							"    \"A. Parquet tanpa partisi\": spark.read.parquet(path_parquet),\n",
+							"    \"B. Delta tanpa partisi\":   spark.read.format(\"delta\").load(path_delta),\n",
+							"    \"C. Delta kota+bulan\":      spark.read.format(\"delta\").load(path_partisi),\n",
+							"}\n",
+							"\n",
+							"for nama, df in skenario.items():\n",
+							"    print(nama, \"->\", query_uji(df).first())\n",
+							"\n",
+							"for nama, df in skenario.items():\n",
+							"    ukur(nama, \"query\", lambda df=df: query_uji(df).collect(), ulang=3)"
+						],
+						"outputs": [],
+						"execution_count": 14
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Cek partition pruning dan predicate pushdown di rencana eksekusi"
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"for nama in [\"A. Parquet tanpa partisi\", \"C. Delta kota+bulan\"]:\n",
+							"    print(\"=====\", nama)\n",
+							"    query_uji(skenario[nama]).explain()\n",
+							"\n",
+							"print(\"===== C, filter pm2_5 > 100\")\n",
+							"skenario[\"C. Delta kota+bulan\"].filter(F.col(\"pm2_5_ug_m3\") > 100).explain()"
+						],
+						"outputs": [],
+						"execution_count": 15
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Caching: tiga agregasi tanpa cache vs dengan cache"
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"df_jkt = spark.read.format(\"delta\").load(path_partisi).filter(F.col(\"kota\") == \"jakarta\")\n",
+							"\n",
+							"def tiga_agregasi(df):\n",
+							"    df.groupBy(\"bulan\").agg(F.avg(\"pm2_5_ug_m3\")).collect()\n",
+							"    df.groupBy(\"kategori_pm25\").count().collect()\n",
+							"    df.agg(F.max(\"temperature_2m\"), F.min(\"temperature_2m\")).collect()\n",
+							"\n",
+							"ukur(\"D. Tanpa cache\", \"3 agregasi\", lambda: tiga_agregasi(df_jkt), ulang=2)\n",
+							"\n",
+							"df_jkt.cache()\n",
+							"ukur(\"E. Dengan cache\", \"isi cache\", lambda: df_jkt.count())\n",
+							"ukur(\"E. Dengan cache\", \"3 agregasi\", lambda: tiga_agregasi(df_jkt), ulang=2)\n",
+							"df_jkt.unpersist()"
+						],
+						"outputs": [],
+						"execution_count": 16
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Update data Delta lalu time travel ke versi sebelumnya"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"dt = DeltaTable.forPath(spark, path_partisi)\n",
+							"v_lama = dt.history(1).select(\"version\").first()[0]\n",
+							"\n",
+							"def pm25_jkt_jan(df):\n",
+							"    return (df.filter((F.col(\"kota\") == \"jakarta\") & (F.col(\"bulan\") == \"2026-01\"))\n",
+							"              .agg(F.round(F.avg(\"pm2_5_ug_m3\"), 2)).first()[0])\n",
+							"\n",
+							"sebelum = pm25_jkt_jan(spark.read.format(\"delta\").load(path_partisi))\n",
+							"dt.update(\"kota = 'jakarta' AND bulan = '2026-01'\", {\"pm2_5_ug_m3\": \"pm2_5_ug_m3 + 10\"})\n",
+							"sesudah = pm25_jkt_jan(spark.read.format(\"delta\").load(path_partisi))\n",
+							"versi_lama = pm25_jkt_jan(spark.read.format(\"delta\").option(\"versionAsOf\", v_lama).load(path_partisi))\n",
+							"\n",
+							"print(\"Sebelum update :\", sebelum)\n",
+							"print(\"Sesudah update :\", sesudah)\n",
+							"print(f\"Versi {v_lama}       :\", versi_lama)\n",
+							"display(dt.history().select(\"version\", \"timestamp\", \"operation\", \"operationMetrics\"))"
+						],
+						"outputs": [],
+						"execution_count": 17
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Ringkasan perbandingan"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df_hasil  = spark.createDataFrame(hasil_ukur, [\"skenario\", \"tahap\", \"detik\"])\n",
+							"df_folder = spark.createDataFrame(hasil_folder, [\"skenario\", \"jumlah_file\", \"ukuran_mb\"])\n",
+							"\n",
+							"display(df_hasil.filter(F.col(\"tahap\").startswith(\"query\"))\n",
+							"        .groupBy(\"skenario\")\n",
+							"        .agg(F.min(\"detik\").alias(\"tercepat_dtk\"), F.round(F.avg(\"detik\"), 2).alias(\"rata2_dtk\"))\n",
+							"        .orderBy(\"skenario\"))\n",
+							"display(df_folder.orderBy(\"skenario\"))\n",
+							"display(df_hasil.orderBy(\"skenario\", \"tahap\"))"
+						],
+						"outputs": [],
+						"execution_count": 18
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Hentikan Spark (wajib, supaya kredit tidak terus terpotong)"
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"mssparkutils.session.stop()"
+						],
+						"outputs": [],
+						"execution_count": 19
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/partitioning_bronze')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "kelompoksyanpse",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"runAsWorkspaceSystemIdentity": false,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "d22bdc56-cd73-414d-a7b3-e6e714936bfe"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
+					"enableDebugMode": false,
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3510581a-663b-4789-9da5-5f6371bd3d51/resourceGroups/Project_TCBA/providers/Microsoft.Synapse/workspaces/synapseprojek/bigDataPools/kelompoksyanpse",
+						"name": "kelompoksyanpse",
+						"type": "Spark",
+						"endpoint": "https://synapseprojek.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/kelompoksyanpse",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net",
+							"authHeader": null
+						},
+						"sparkVersion": "3.5",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28,
+						"extraHeader": null
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"from pyspark.sql import functions as F\n",
+							"\n",
+							"storage_account = \"adls1tcba\"  \n",
+							"container = \"lakehouse\"        \n",
+							"\n",
+							"raw_path = f\"abfss://{container}@{storage_account}.dfs.core.windows.net/bronze/ForExportNewApi.csv\"\n",
+							"partitioned_path = f\"abfss://{container}@{storage_account}.dfs.core.windows.net/bronze/tomtom_partitioned/\"\n",
+							"\n",
+							"# Baca file CSV mentah (1.23 GB) dengan inferSchema\n",
+							"df_raw = (\n",
+							"    spark.read\n",
+							"    .option(\"header\", \"true\")\n",
+							"    .option(\"inferSchema\", \"true\")\n",
+							"    .csv(raw_path)\n",
+							")\n",
+							"\n",
+							"# Ekstrak kolom 'year' dan 'month' dari LocalDateTime sebagai kunci partisi\n",
+							"df_partitioned = (\n",
+							"    df_raw\n",
+							"    .withColumn(\"parsed_time\", F.to_timestamp(\"LocalDateTime\"))\n",
+							"    .withColumn(\"year\", F.year(\"parsed_time\"))\n",
+							"    .withColumn(\"month\", F.format_string(\"%02d\", F.month(\"parsed_time\")))\n",
+							"    .drop(\"parsed_time\")\n",
+							")\n",
+							"\n",
+							"# Tulis ulang ke ADLS Gen2 dalam format Parquet terpartisi\n",
+							"(\n",
+							"    df_partitioned\n",
+							"    .repartition(\"year\", \"month\")\n",
+							"    .write\n",
+							"    .mode(\"overwrite\")\n",
+							"    .partitionBy(\"year\", \"month\")\n",
+							"    .parquet(partitioned_path)\n",
+							")\n",
+							"\n",
+							"print(\"Partisi selesai disimpan di:\", partitioned_path)"
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"# Baca kembali folder yang sudah dipartisi\n",
+							"df_check = spark.read.parquet(partitioned_path)\n",
+							"\n",
+							"print(\"Total baris:\", df_check.count())\n",
+							"df_check.groupBy(\"year\", \"month\").count().orderBy(\"year\", \"month\").show(30)"
+						],
+						"outputs": [],
+						"execution_count": 3
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/preprocessing')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "kelompoksyanpse",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"runAsWorkspaceSystemIdentity": false,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "ef472865-5f2a-4a43-b1a4-945c6da7f5a5"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3510581a-663b-4789-9da5-5f6371bd3d51/resourceGroups/Project_TCBA/providers/Microsoft.Synapse/workspaces/synapseprojek/bigDataPools/kelompoksyanpse",
+						"name": "kelompoksyanpse",
+						"type": "Spark",
+						"endpoint": "https://synapseprojek.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/kelompoksyanpse",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.5",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"from pyspark.sql import SparkSession\n",
+							"from pyspark.sql import functions as F\n",
+							"from pyspark.sql.types import *\n",
+							"\n",
+							"storage = \"adls1tcba\"\n",
+							"bronze_path = (f\"abfss://lakehouse@{storage}.dfs.core.windows.net/bronze/tomtom\")\n",
+							"temp_path = (f\"abfss://lakehouse@{storage}.dfs.core.windows.net/temp/tomtom\")\n",
+							"silver_path = (f\"abfss://lakehouse@{storage}.dfs.core.windows.net/silver/tomtom\")\n",
+							"\n",
+							"# Zona waktu pengambilan data dari nama file\n",
+							"spark.conf.set(\"spark.sql.session.timeZone\", \"UTC\")"
+						],
+						"outputs": [],
+						"execution_count": 36
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from notebookutils import mssparkutils\n",
+							"import re\n",
+							"\n",
+							"files = mssparkutils.fs.ls(bronze_path)\n",
+							"\n",
+							"json_files = [\n",
+							"    f for f in files\n",
+							"    if f.name.endswith(\".json\")\n",
+							"]\n",
+							"\n",
+							"mssparkutils.fs.mkdirs(temp_path)\n",
+							"\n",
+							"for file in json_files:\n",
+							"    safe_name = re.sub(r\"[:]\", \"_\", file.name)\n",
+							"\n",
+							"    target_file = f\"{temp_path}/{safe_name}\"\n",
+							"\n",
+							"    mssparkutils.fs.cp(\n",
+							"        file.path,\n",
+							"        target_file,\n",
+							"        True\n",
+							"    )\n",
+							"\n",
+							"print(\"Jumlah file JSON:\", len(json_files))\n",
+							"print(\"Proses penyalinan selesai.\")"
+						],
+						"outputs": [],
+						"execution_count": 37
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df_bronze = (spark.read.option(\"multiLine\", True)\n",
+							"             .json(f\"{temp_path}/*.json\")\n",
+							"             .withColumn(\"source_file\", F.input_file_name())\n",
+							")\n",
+							"\n",
+							"df_bronze.printSchema()\n",
+							"display(df_bronze.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 38
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"cek missing value"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"def cek_null(df):\n",
+							"    return df.select([\n",
+							"        F.sum(\n",
+							"            F.when(\n",
+							"                F.col(c).isNull() | (F.trim(F.col(c).cast(\"string\")) == \"\"),\n",
+							"                1\n",
+							"            ).otherwise(0)\n",
+							"        ).alias(c)\n",
+							"        for c in df.columns\n",
+							"    ])\n",
+							"\n",
+							"display(cek_null(df_bronze))"
+						],
+						"outputs": [],
+						"execution_count": 39
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"flatten struktur JSON"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df_flat = df_bronze.select(\n",
+							"    F.col(\"flowSegmentData.frc\").alias(\"frc\"),\n",
+							"    F.col(\"flowSegmentData.currentSpeed\").alias(\"current_speed\"),\n",
+							"    F.col(\"flowSegmentData.freeFlowSpeed\").alias(\"free_flow_speed\"),\n",
+							"    F.col(\"flowSegmentData.currentTravelTime\").alias(\"current_travel_time\"),\n",
+							"    F.col(\"flowSegmentData.freeFlowTravelTime\").alias(\"free_flow_travel_time\"),\n",
+							"    F.col(\"flowSegmentData.confidence\").alias(\"confidence\"),\n",
+							"    F.col(\"flowSegmentData.roadClosure\").alias(\"road_closure\"),\n",
+							"    F.col(\"flowSegmentData.coordinates.coordinate\").alias(\"coordinates\"),\n",
+							"    F.col(\"flowSegmentData.@version\").alias(\"version\"),\n",
+							"    F.col(\"source_file\")\n",
+							")\n",
+							"\n",
+							"display(df_flat.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 40
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"ambil waktu observasi"
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"# Mengambil tanggal dan waktu dari nama file\n",
+							"df_flat = df_flat.withColumn(\n",
+							"    \"observation_time\",\n",
+							"    F.to_timestamp(\n",
+							"        F.regexp_extract(\n",
+							"            F.col(\"source_file\"),\n",
+							"            r\"tomtom_(\\d{4}-\\d{2}-\\d{2}T\\d{2}_\\d{2}_\\d{2})\",\n",
+							"            1\n",
+							"        ),\n",
+							"        \"yyyy-MM-dd'T'HH_mm_ss\"\n",
+							"    )\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 41
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"casting tipe data"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df_flat = (\n",
+							"    df_flat\n",
+							"    .withColumn(\"current_speed\", F.col(\"current_speed\").cast(\"double\"))\n",
+							"    .withColumn(\"free_flow_speed\", F.col(\"free_flow_speed\").cast(\"double\"))\n",
+							"    .withColumn(\"current_travel_time\", F.col(\"current_travel_time\").cast(\"double\"))\n",
+							"    .withColumn(\"free_flow_travel_time\", F.col(\"free_flow_travel_time\").cast(\"double\"))\n",
+							"    .withColumn(\"confidence\", F.col(\"confidence\").cast(\"double\"))\n",
+							"    .withColumn(\"road_closure\", F.col(\"road_closure\").cast(\"boolean\"))\n",
+							"    .withColumn(\"version\", F.col(\"version\").cast(\"string\"))\n",
+							")\n",
+							"\n",
+							"df_flat.printSchema()\n",
+							"display(df_flat.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 42
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"cleaning dan validasi"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"# Menghapus data yang tidak memiliki informasi penting\n",
+							"df_clean = df_flat.dropna(\n",
+							"    subset=[\n",
+							"        \"frc\",\n",
+							"        \"current_speed\",\n",
+							"        \"free_flow_speed\",\n",
+							"        \"current_travel_time\",\n",
+							"        \"free_flow_travel_time\",\n",
+							"        \"confidence\",\n",
+							"        \"road_closure\",\n",
+							"        \"coordinates\",\n",
+							"        \"observation_time\"\n",
+							"    ]\n",
+							")\n",
+							"\n",
+							"# Memastikan nilai numerik berada pada rentang yang valid\n",
+							"df_clean = df_clean.filter(\n",
+							"    (F.col(\"current_speed\") >= 0) &\n",
+							"    (F.col(\"free_flow_speed\") >= 0) &\n",
+							"    (F.col(\"current_travel_time\") >= 0) &\n",
+							"    (F.col(\"free_flow_travel_time\") >= 0) &\n",
+							"    (F.col(\"confidence\").between(0, 1)) &\n",
+							"    F.col(\"confidence\").between(0, 1) &\n",
+							"    (F.size(F.col(\"coordinates\")) > 0)\n",
+							")\n",
+							"\n",
+							"# Memastikan koordinat tersedia\n",
+							"df_clean = df_clean.filter(F.size(F.col(\"coordinates\")) > 0)\n",
+							"\n",
+							"# Menghapus duplikasi data yang benar-benar identik\n",
+							"df_clean = df_clean.dropDuplicates()\n",
+							"\n",
+							"print(\"Jumlah data setelah cleaning:\", df_clean.count())\n",
+							"display(df_clean.limit(5))"
+						],
+						"outputs": [],
+						"execution_count": 43
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"bentuk DataFrame Silver dan cek hasil"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df_silver = (\n",
+							"    df_clean\n",
+							"    .withColumn(\"processed_at\", F.current_timestamp())\n",
+							"    .withColumn(\"source_system\", F.lit(\"TomTom\"))\n",
+							")\n",
+							"\n",
+							"df_silver.printSchema()\n",
+							"display(df_silver.limit(10))\n",
+							"display(cek_null(df_silver))\n",
+							"print(\"Jumlah data Silver:\", df_silver.count())"
+						],
+						"outputs": [],
+						"execution_count": 44
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"simpan ke silver"
+						]
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"df_silver.write.mode(\"overwrite\").format(\"parquet\").save(silver_path)"
+						],
+						"outputs": [],
+						"execution_count": 45
+					},
+					{
+						"cell_type": "markdown",
+						"source": [
+							"verifikasi hasil tersimpan"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df_silver_result = spark.read.parquet(silver_path)\n",
+							"\n",
+							"print(\"Jumlah data Silver:\", df_silver_result.count())\n",
+							"\n",
+							"display(df_silver_result)"
+						],
+						"outputs": [],
+						"execution_count": 46
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"mssparkutils.session.stop()"
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/preprocessing2')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "kelompoksyanpse",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "3bb3ad29-1c2b-4a2c-b6d6-4ea9ff0a2da0"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3510581a-663b-4789-9da5-5f6371bd3d51/resourceGroups/Project_TCBA/providers/Microsoft.Synapse/workspaces/synapseprojek/bigDataPools/kelompoksyanpse",
+						"name": "kelompoksyanpse",
+						"type": "Spark",
+						"endpoint": "https://synapseprojek.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/kelompoksyanpse",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.5",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"## Ekstraksi ZIP dan partisi"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"import os\n",
+							"import zipfile\n",
+							"from pyspark.sql import functions as F\n",
+							"\n",
+							"storage = \"adls1tcba\"\n",
+							"container = \"lakehouse\"\n",
+							"\n",
+							"# Path file ZIP\n",
+							"raw_zip_abfss = (\n",
+							"    f\"abfss://{container}@{storage}.dfs.core.windows.net/raw/tomtom_traffic.zip\"\n",
+							")\n",
+							"bronze_root = (\n",
+							"    f\"abfss://{container}@{storage}.dfs.core.windows.net/bronze/tomtom_partitioned\"\n",
+							")\n",
+							"\n",
+							"# Path sementara di local driver node Synapse\n",
+							"local_zip_path = \"/tmp/tomtom_traffic.zip\"\n",
+							"local_extract_dir = \"/tmp/tomtom_extracted\"\n",
+							"temp_csv_abfss = (\n",
+							"    f\"abfss://{container}@{storage}.dfs.core.windows.net/raw/temp_extracted_csv\"\n",
+							")\n",
+							"\n",
+							"# Salin file ZIP dari ADLS ke local driver Synapse menggunakan mssparkutils\n",
+							"mssparkutils.fs.cp(raw_zip_abfss, f\"file:{local_zip_path}\")\n",
+							"\n",
+							"# Ekstrak file ZIP di local driver\n",
+							"os.makedirs(local_extract_dir, exist_ok=True)\n",
+							"with zipfile.ZipFile(local_zip_path, \"r\") as z:\n",
+							"  z.extractall(local_extract_dir)\n",
+							"\n",
+							"# Upload hasil ekstrak CSV sementara ke ADLS agar bisa dibaca terdistribusi oleh Spark\n",
+							"mssparkutils.fs.cp(f\"file:{local_extract_dir}\", temp_csv_abfss, recurse=True)\n",
+							"\n",
+							"# Baca CSV, tambah kolom partisi year & month, lalu simpan sebagai Parquet di Bronze\n",
+							"df_raw_csv = (\n",
+							"    spark.read.option(\"header\", \"true\")\n",
+							"    .option(\"inferSchema\", \"true\")\n",
+							"    .csv(f\"{temp_csv_abfss}/*.csv\")\n",
+							")\n",
+							"\n",
+							"df_to_bronze = df_raw_csv.withColumn(\n",
+							"    \"year\", F.year(F.to_timestamp(\"LocalDateTime\", \"yyyy-MM-dd HH:mm:ss\"))\n",
+							").withColumn(\n",
+							"    \"month\", F.month(F.to_timestamp(\"LocalDateTime\", \"yyyy-MM-dd HH:mm:ss\"))\n",
+							")\n",
+							"\n",
+							"(\n",
+							"    df_to_bronze.write.format(\"parquet\")\n",
+							"    .mode(\n",
+							"        \"overwrite\"\n",
+							"    )  \n",
+							"    .partitionBy(\"year\", \"month\")\n",
+							"    .save(bronze_root)\n",
+							")\n",
+							"\n",
+							"import shutil\n",
+							"\n",
+							"# Bersihkan seluruh file sementara dan file mentah agar tersisa hasil partisi saja\n",
+							"os.remove(local_zip_path)  # Hapus ZIP di local driver\n",
+							"shutil.rmtree(\n",
+							"    local_extract_dir, ignore_errors=True\n",
+							"mssparkutils.fs.rm(\n",
+							"    temp_csv_abfss, recurse=True\n",
+							"mssparkutils.fs.rm(\n",
+							"    raw_zip_abfss\n",
+							")  \n",
+							"\n",
+							"print(\"Ekstraksi ZIP dan penulisan ke Bronze Parquet selesai!\")"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"from pyspark.sql import functions as F\n",
+							"from pyspark.sql import types as T\n",
+							"from pyspark.sql.window import Window\n",
+							"from delta.tables import DeltaTable\n",
+							"\n",
+							"# Sumber Parquet terpartisi\n",
+							"bronze_root = (f\"abfss://{container}@{storage}.dfs.core.windows.net/bronze/tomtom_partitioned\")\n",
+							"\n",
+							"# Output Delta\n",
+							"silver_root = (f\"abfss://{container}@{storage}.dfs.core.windows.net/silver/tomtom\")\n",
+							"gold_root = (f\"abfss://{container}@{storage}.dfs.core.windows.net/gold/tomtom\")\n",
+							"\n",
+							"# Zona waktu: UTC untuk timestamp sumber jika timestamp memang UTC.\n",
+							"spark.conf.set(\"spark.sql.session.timeZone\", \"UTC\")\n",
+							"\n",
+							"print(\"Bronze:\", bronze_root)\n",
+							"print(\"Silver:\", silver_root)\n",
+							"print(\"Gold:\", gold_root)\n",
+							"print(\"Spark version:\", spark.version)"
+						],
+						"outputs": [],
+						"execution_count": 23
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Baca seluruh batch Parquet dari root Bronze"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"# Membaca root folder agar Spark menemukan partisi year=... dan month=...\n",
+							"# Jangan tambahkan recursiveFileLookup=True.\n",
+							"df_bronze = (\n",
+							"    spark.read\n",
+							"    .format(\"parquet\")\n",
+							"    .load(bronze_root)\n",
+							")\n",
+							"\n",
+							"print(\"Jumlah kolom:\", len(df_bronze.columns))\n",
+							"print(\"Kolom:\", df_bronze.columns)\n",
+							"df_bronze.printSchema()\n",
+							"display(df_bronze.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 24
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as F\n",
+							"\n",
+							"print(\"Jumlah baris:\", df_bronze.count())\n",
+							"print(\"Jumlah kolom:\", len(df_bronze.columns))\n",
+							"\n",
+							"# Nilai null per kolom\n",
+							"null_profile = df_bronze.select([\n",
+							"    F.count(F.when(F.col(c).isNull(), 1)).alias(c)\n",
+							"    for c in df_bronze.columns\n",
+							"])\n",
+							"display(null_profile)\n",
+							"\n",
+							"# Pastikan partisi year dan month berhasil terbaca\n",
+							"for required_partition in [\"year\", \"month\"]:\n",
+							"    if required_partition not in df_bronze.columns:\n",
+							"        print(f\"PERHATIAN: kolom partisi {required_partition} tidak ditemukan.\")\n",
+							"    else:\n",
+							"        print(f\"Distinct {required_partition}:\")\n",
+							"        display(df_bronze.select(required_partition).distinct().orderBy(required_partition))"
+						],
+						"outputs": [],
+						"execution_count": 25
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Konfigurasi pemetaan kolom"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"# Identitas wilayah\n",
+							"COL_COUNTRY = \"Country\"\n",
+							"COL_CITY = \"City\"\n",
+							"\n",
+							"# Kolom waktu\n",
+							"COL_TIMESTAMP = \"UpdateTimeUTC\"\n",
+							"COL_LOCAL_TIMESTAMP = \"LocalDateTime\"\n",
+							"COL_LOCAL_TIMESTAMP_WEEK_AGO = \"LocalDateTimeWeekAgo\"\n",
+							"\n",
+							"# Kolom lalu lintas\n",
+							"COL_JAMS_DELAY = \"JamsDelay\"\n",
+							"COL_TRAFFIC_INDEX_LIVE = \"TrafficIndexLive\"\n",
+							"COL_JAMS_COUNT = \"JamsCount\"\n",
+							"COL_TRAFFIC_INDEX_WEEK_AGO = \"TrafficIndexWeekAgo\"\n",
+							"\n",
+							"# Kolom waktu tempuh\n",
+							"COL_TRAVEL_TIME_LIVE = \"TravelTimeLivePer10KmsMins\"\n",
+							"COL_TRAVEL_TIME_HISTORIC = \"TravelTimeHistoricPer10KmsMins\"\n",
+							"COL_MINS_DELAY = \"MinsDelay\"\n",
+							"\n",
+							"# Kolom tambahan\n",
+							"COL_WEEK_AGO = \"WeekAgo\"\n",
+							"\n",
+							"# Kolom partisi\n",
+							"COL_YEAR = \"year\"\n",
+							"COL_MONTH = \"month\"\n",
+							"\n",
+							"# Tidak tersedia pada dataset ini\n",
+							"COL_CURRENT_SPEED = None\n",
+							"COL_FREE_FLOW_SPEED = None\n",
+							"COL_CURRENT_TRAVEL_TIME = None\n",
+							"COL_FREE_FLOW_TRAVEL_TIME = None\n",
+							"COL_CONFIDENCE = None\n",
+							"COL_ROAD_CLOSURE = None\n",
+							"COL_FRC = None\n",
+							"COL_SEGMENT_ID = None\n",
+							"COL_COORDINATES = None\n",
+							"\n",
+							"# Validasi kolom wajib\n",
+							"def require_column(df, col_name, logical_name):\n",
+							"    if col_name is None or col_name not in df.columns:\n",
+							"        raise ValueError(\n",
+							"            f\"Kolom {logical_name} tidak ditemukan: {col_name}\"\n",
+							"        )\n",
+							"\n",
+							"require_column(df_bronze, COL_COUNTRY, \"Country\")\n",
+							"require_column(df_bronze, COL_CITY, \"City\")\n",
+							"require_column(df_bronze, COL_TIMESTAMP, \"UpdateTimeUTC\")\n",
+							"require_column(df_bronze, COL_JAMS_COUNT, \"JamsCount\")\n",
+							"\n",
+							"print(\"Pemetaan kolom berhasil.\")"
+						],
+						"outputs": [],
+						"execution_count": 26
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Standarisasi nama, tipe data, dan nilai kategori"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as F\n",
+							"\n",
+							"# 1. Standarisasi Country dan City\n",
+							"df_work = (\n",
+							"    df_bronze\n",
+							"    .withColumn(\n",
+							"        \"Country\",\n",
+							"        F.upper(F.trim(F.col(COL_COUNTRY).cast(\"string\")))\n",
+							"    )\n",
+							"    .withColumn(\n",
+							"        \"City\",\n",
+							"        F.lower(F.trim(F.col(COL_CITY).cast(\"string\")))\n",
+							"    )\n",
+							")\n",
+							"\n",
+							"# 2. Konversi kolom timestamp\n",
+							"TIMESTAMP_COLUMNS = [\n",
+							"    \"UpdateTimeUTC\",\n",
+							"    \"LocalDateTime\",\n",
+							"    \"LocalDateTimeWeekAgo\"\n",
+							"]\n",
+							"\n",
+							"for c in TIMESTAMP_COLUMNS:\n",
+							"    if c in df_work.columns:\n",
+							"        df_work = df_work.withColumn(\n",
+							"            c,\n",
+							"            F.to_timestamp(\n",
+							"                F.col(c),\n",
+							"                \"yyyy-MM-dd HH:mm:ss\"\n",
+							"            )\n",
+							"        )\n",
+							"\n",
+							"# 3. Konversi JamsCount menjadi integer\n",
+							"df_work = df_work.withColumn(\n",
+							"    \"JamsCount\",\n",
+							"    F.col(\"JamsCount\").cast(\"int\")\n",
+							")\n",
+							"\n",
+							"# 4. Konversi kolom numerik menjadi double\n",
+							"DOUBLE_COLUMNS = [\n",
+							"    \"JamsDelay\",\n",
+							"    \"TrafficIndexLive\",\n",
+							"    \"TrafficIndexWeekAgo\",\n",
+							"    \"TravelTimeLivePer10KmsMins\",\n",
+							"    \"TravelTimeHistoricPer10KmsMins\",\n",
+							"    \"MinsDelay\"\n",
+							"]\n",
+							"\n",
+							"for c in DOUBLE_COLUMNS:\n",
+							"    if c in df_work.columns:\n",
+							"        df_work = df_work.withColumn(\n",
+							"            c,\n",
+							"            F.col(c).cast(\"double\")\n",
+							"        )\n",
+							"\n",
+							"# 5. Pastikan kolom partisi bertipe integer\n",
+							"df_work = (\n",
+							"    df_work\n",
+							"    .withColumn(\"year\", F.col(\"year\").cast(\"int\"))\n",
+							"    .withColumn(\"month\", F.col(\"month\").cast(\"int\"))\n",
+							")\n",
+							"\n",
+							"# 6. Tambahkan waktu preprocessing\n",
+							"df_work = df_work.withColumn(\n",
+							"    \"processed_at_utc\",\n",
+							"    F.current_timestamp()\n",
+							")\n",
+							"\n",
+							"# 7. Periksa hasil\n",
+							"display(df_work.limit(10))\n",
+							"df_work.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 27
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Konversi kolom waktu dan JamsCount"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as F\n",
+							"\n",
+							"# 1. Standarisasi Country dan City\n",
+							"df_work = (\n",
+							"    df_bronze\n",
+							"    .withColumn(\n",
+							"        \"Country\",\n",
+							"        F.upper(F.trim(F.col(COL_COUNTRY).cast(\"string\")))\n",
+							"    )\n",
+							"    .withColumn(\n",
+							"        \"City\",\n",
+							"        F.lower(F.trim(F.col(COL_CITY).cast(\"string\")))\n",
+							"    )\n",
+							")\n",
+							"\n",
+							"# 2. Konversi kolom waktu dari String menjadi Timestamp\n",
+							"TIMESTAMP_COLUMNS = [\n",
+							"    \"UpdateTimeUTC\",\n",
+							"    \"LocalDateTime\",\n",
+							"    \"LocalDateTimeWeekAgo\"\n",
+							"]\n",
+							"\n",
+							"for c in TIMESTAMP_COLUMNS:\n",
+							"    if c in df_work.columns:\n",
+							"        df_work = df_work.withColumn(\n",
+							"            c,\n",
+							"            F.to_timestamp(\n",
+							"                F.col(c),\n",
+							"                \"yyyy-MM-dd HH:mm:ss\"\n",
+							"            )\n",
+							"        )\n",
+							"\n",
+							"# 3. Konversi JamsCount dari String menjadi Integer\n",
+							"df_work = df_work.withColumn(\n",
+							"    \"JamsCount\",\n",
+							"    F.col(\"JamsCount\").cast(\"int\")\n",
+							")\n",
+							"\n",
+							"# 4. Konversi kolom numerik menjadi Double\n",
+							"DOUBLE_COLUMNS = [\n",
+							"    \"JamsDelay\",\n",
+							"    \"TrafficIndexLive\",\n",
+							"    \"TrafficIndexWeekAgo\",\n",
+							"    \"TravelTimeLivePer10KmsMins\",\n",
+							"    \"TravelTimeHistoricPer10KmsMins\",\n",
+							"    \"MinsDelay\"\n",
+							"]\n",
+							"\n",
+							"for c in DOUBLE_COLUMNS:\n",
+							"    if c in df_work.columns:\n",
+							"        df_work = df_work.withColumn(\n",
+							"            c,\n",
+							"            F.col(c).cast(\"double\")\n",
+							"        )\n",
+							"\n",
+							"# 5. Konversi kolom partisi menjadi Integer\n",
+							"df_work = (\n",
+							"    df_work\n",
+							"    .withColumn(\"year\", F.col(\"year\").cast(\"int\"))\n",
+							"    .withColumn(\"month\", F.col(\"month\").cast(\"int\"))\n",
+							")\n",
+							"\n",
+							"# 6. Tambahkan metadata waktu preprocessing\n",
+							"df_work = df_work.withColumn(\n",
+							"    \"processed_at_utc\",\n",
+							"    F.current_timestamp()\n",
+							")\n",
+							"\n",
+							"# 7. Tampilkan hasil\n",
+							"display(df_work.limit(10))\n",
+							"\n",
+							"# 8. Periksa tipe data\n",
+							"df_work.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 28
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"# Periksa apakah ada nilai yang gagal dikonversi\n",
+							"display(\n",
+							"    df_work.select(\n",
+							"        F.count(\"*\").alias(\"total_rows\"),\n",
+							"\n",
+							"        F.count(\n",
+							"            F.when(F.col(\"UpdateTimeUTC\").isNull(), 1)\n",
+							"        ).alias(\"null_UpdateTimeUTC\"),\n",
+							"\n",
+							"        F.count(\n",
+							"            F.when(F.col(\"LocalDateTime\").isNull(), 1)\n",
+							"        ).alias(\"null_LocalDateTime\"),\n",
+							"\n",
+							"        F.count(\n",
+							"            F.when(F.col(\"LocalDateTimeWeekAgo\").isNull(), 1)\n",
+							"        ).alias(\"null_LocalDateTimeWeekAgo\"),\n",
+							"\n",
+							"        F.count(\n",
+							"            F.when(F.col(\"JamsCount\").isNull(), 1)\n",
+							"        ).alias(\"null_JamsCount\")\n",
+							"    )\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 29
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Validasi dan pembersihan data"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"# Validasi kolom wajib\n",
+							"required_columns = [\n",
+							"    \"Country\",\n",
+							"    \"City\",\n",
+							"    \"UpdateTimeUTC\",\n",
+							"    \"LocalDateTime\"\n",
+							"]\n",
+							"\n",
+							"for c in required_columns:\n",
+							"    if c not in df_work.columns:\n",
+							"        raise ValueError(f\"Kolom wajib tidak ditemukan: {c}\")\n",
+							"\n",
+							"# Periksa nilai kosong sebelum filtering\n",
+							"print(\"Jumlah baris awal:\", df_work.count())\n",
+							"\n",
+							"display(\n",
+							"    df_work.select([\n",
+							"        F.count(\n",
+							"            F.when(F.col(c).isNull(), 1)\n",
+							"        ).alias(c)\n",
+							"        for c in required_columns\n",
+							"    ])\n",
+							")\n",
+							"\n",
+							"# Hapus baris yang tidak memiliki identitas wilayah dan waktu\n",
+							"df_clean = df_work.filter(\n",
+							"    F.col(\"Country\").isNotNull() &\n",
+							"    (F.col(\"Country\") != \"\") &\n",
+							"    F.col(\"City\").isNotNull() &\n",
+							"    (F.col(\"City\") != \"\") &\n",
+							"    F.col(\"UpdateTimeUTC\").isNotNull() &\n",
+							"    F.col(\"LocalDateTime\").isNotNull()\n",
+							")\n",
+							"\n",
+							"# JamsCount tidak boleh negatif\n",
+							"df_clean = df_clean.filter(\n",
+							"    F.col(\"JamsCount\").isNull() |\n",
+							"    (F.col(\"JamsCount\") >= 0)\n",
+							")\n",
+							"\n",
+							"print(\"Jumlah baris setelah validasi:\", df_clean.count())\n",
+							"\n",
+							"display(df_clean.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 30
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"# Audit nilai null setelah konversi tipe data\n",
+							"cols_to_audit = [c for c in [\n",
+							"    \"UpdateTimeUTC\", \"LocalDateTime\", \"LocalDateTimeWeekAgo\", \"JamsCount\"\n",
+							"] if c in df_clean.columns]\n",
+							"if cols_to_audit:\n",
+							"    display(df_clean.select([\n",
+							"        F.count(F.when(F.col(c).isNull(), 1)).alias(c)\n",
+							"        for c in cols_to_audit\n",
+							"    ]))"
+						],
+						"outputs": [],
+						"execution_count": 31
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Deduplikasi"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"DEDUP_KEY_COLUMNS = [\n",
+							"    \"Country\",\n",
+							"    \"City\",\n",
+							"    \"UpdateTimeUTC\"\n",
+							"]\n",
+							"\n",
+							"# Periksa jumlah duplikasi\n",
+							"duplicate_check = (\n",
+							"    df_clean\n",
+							"    .groupBy(*DEDUP_KEY_COLUMNS)\n",
+							"    .count()\n",
+							"    .filter(F.col(\"count\") > 1)\n",
+							")\n",
+							"\n",
+							"display(duplicate_check.limit(20))\n",
+							"\n",
+							"# Hapus duplikasi berdasarkan kunci observasi\n",
+							"df_clean = df_clean.dropDuplicates(DEDUP_KEY_COLUMNS)\n",
+							"\n",
+							"print(\"Jumlah baris setelah deduplikasi:\", df_clean.count())"
+						],
+						"outputs": [],
+						"execution_count": 32
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Buat indikator tambahan"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df_silver = (\n",
+							"    df_clean\n",
+							"    .withColumn(\n",
+							"        \"traffic_index_change_vs_week_ago\",\n",
+							"        F.col(\"TrafficIndexLive\") -\n",
+							"        F.col(\"TrafficIndexWeekAgo\")\n",
+							"    )\n",
+							"    .withColumn(\n",
+							"        \"travel_time_change_vs_historic\",\n",
+							"        F.col(\"TravelTimeLivePer10KmsMins\") -\n",
+							"        F.col(\"TravelTimeHistoricPer10KmsMins\")\n",
+							"    )\n",
+							")\n",
+							"\n",
+							"display(df_silver.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 33
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Pemeriksaan cakupan periode"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"# Pemeriksaan jumlah data per bulan\n",
+							"period_check = (\n",
+							"    df_silver\n",
+							"    .groupBy(\"year\", \"month\")\n",
+							"    .agg(\n",
+							"        F.count(\"*\").alias(\"total_records\"),\n",
+							"        F.countDistinct(\"City\").alias(\"total_cities\"),\n",
+							"        F.countDistinct(\"Country\").alias(\"total_countries\")\n",
+							"    )\n",
+							"    .orderBy(\"year\", \"month\")\n",
+							")\n",
+							"\n",
+							"display(period_check)\n",
+							"\n",
+							"\n",
+							"# Pemeriksaan rentang waktu observasi\n",
+							"df_silver.select(\n",
+							"    F.min(\"UpdateTimeUTC\").alias(\"first_update_utc\"),\n",
+							"    F.max(\"UpdateTimeUTC\").alias(\"last_update_utc\"),\n",
+							"    F.min(\"LocalDateTime\").alias(\"first_local_time\"),\n",
+							"    F.max(\"LocalDateTime\").alias(\"last_local_time\")\n",
+							").show(truncate=False)"
+						],
+						"outputs": [],
+						"execution_count": 34
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### simpan silver sebagai delta, dipartisi per negara"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"# Tulis Silver Delta. Untuk full rebuild awal, overwrite.\n",
+							"# Untuk pipeline batch rutin, ubah ke incremental/MERGE agar tidak menulis ulang seluruh historis.\n",
+							"(\n",
+							"    df_silver.write\n",
+							"    .format(\"delta\")\n",
+							"    .mode(\"overwrite\")\n",
+							"    .partitionBy(\"Country\")\n",
+							"    .option(\"overwriteSchema\", \"true\")\n",
+							"    .save(silver_root)\n",
+							")\n",
+							"\n",
+							"print(\"Silver Delta tersimpan:\", silver_root)"
+						],
+						"outputs": [],
+						"execution_count": 35
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### optimize dan z-order silver"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"try:\n",
+							"    spark.sql(f\"OPTIMIZE delta.`{silver_root}` ZORDER BY (City)\")\n",
+							"    print(\"OPTIMIZE ZORDER Silver selesai.\")\n",
+							"except Exception as e:\n",
+							"    print(\"OPTIMIZE ZORDER belum didukung atau gagal.\")\n",
+							"    print(str(e)[:1500])"
+						],
+						"outputs": [],
+						"execution_count": 36
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df_silver_final = spark.read.format(\"delta\").load(silver_root)\n",
+							"\n",
+							"print(\"Total records Silver:\", df_silver_final.count())\n",
+							"df_silver_final.printSchema()"
+						],
+						"outputs": [],
+						"execution_count": 37
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### validasi hasil silver"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql import functions as F\n",
+							"\n",
+							"# Membaca kembali data Silver dari ADLS\n",
+							"df_silver_check = spark.read.format(\"delta\").load(silver_root)\n",
+							"\n",
+							"# 1. Memeriksa jumlah data\n",
+							"print(\"Total records Silver:\", df_silver_check.count())\n",
+							"\n",
+							"# 2. Memeriksa skema\n",
+							"df_silver_check.printSchema()\n",
+							"\n",
+							"# 3. Memeriksa nilai null pada kolom penting\n",
+							"display(\n",
+							"    df_silver_check.select(\n",
+							"        *[\n",
+							"            F.count(F.when(F.col(c).isNull(), 1)).alias(c)\n",
+							"            for c in [\n",
+							"                \"Country\", \"City\", \"UpdateTimeUTC\",\n",
+							"                \"LocalDateTime\", \"JamsCount\"\n",
+							"            ]\n",
+							"        ]\n",
+							"    )\n",
+							")\n",
+							"\n",
+							"# 4. Memeriksa rentang waktu\n",
+							"df_silver_check.select(\n",
+							"    F.min(\"UpdateTimeUTC\").alias(\"first_update\"),\n",
+							"    F.max(\"UpdateTimeUTC\").alias(\"last_update\")\n",
+							").show(truncate=False)\n",
+							"\n",
+							"# 5. Memeriksa jumlah data per negara\n",
+							"display(\n",
+							"    df_silver_check.groupBy(\"Country\")\n",
+							"    .count()\n",
+							"    .orderBy(\"Country\")\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 38
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### buat gold (agregasi lalu lintas per kota dan jam/bulan)"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"gold_source = (\n",
+							"    df_silver\n",
+							"    .withColumn(\n",
+							"        \"observation_hour\",\n",
+							"        F.date_trunc(\"hour\", F.col(\"LocalDateTime\"))\n",
+							"    )\n",
+							")\n",
+							"\n",
+							"gold_traffic_city = (\n",
+							"    gold_source\n",
+							"    .groupBy(\n",
+							"        \"Country\",\n",
+							"        \"City\",\n",
+							"        \"observation_hour\"\n",
+							"    )\n",
+							"    .agg(\n",
+							"        F.avg(\"TrafficIndexLive\").alias(\"avg_traffic_index\"),\n",
+							"\n",
+							"        F.avg(\"TrafficIndexWeekAgo\").alias(\n",
+							"            \"avg_traffic_index_week_ago\"\n",
+							"        ),\n",
+							"\n",
+							"        F.avg(\"JamsCount\").alias(\"avg_jams_count\"),\n",
+							"\n",
+							"        F.avg(\"JamsDelay\").alias(\"avg_jams_delay\"),\n",
+							"\n",
+							"        F.avg(\"MinsDelay\").alias(\"avg_mins_delay\"),\n",
+							"\n",
+							"        F.avg(\"TravelTimeLivePer10KmsMins\").alias(\n",
+							"            \"avg_travel_time_live\"\n",
+							"        ),\n",
+							"\n",
+							"        F.avg(\"TravelTimeHistoricPer10KmsMins\").alias(\n",
+							"            \"avg_travel_time_historic\"\n",
+							"        ),\n",
+							"\n",
+							"        F.avg(\"traffic_index_change_vs_week_ago\").alias(\n",
+							"            \"avg_traffic_index_change\"\n",
+							"        ),\n",
+							"\n",
+							"        F.count(\"*\").alias(\"total_observations\")\n",
+							"    )\n",
+							"    .orderBy(\"Country\", \"City\", \"observation_hour\")\n",
+							")\n",
+							"\n",
+							"display(gold_traffic_city.limit(20))"
+						],
+						"outputs": [],
+						"execution_count": 39
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Gold features untuk ML"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"window_spec = (\n",
+							"    Window\n",
+							"    .partitionBy(\"Country\", \"City\")\n",
+							"    .orderBy(\"observation_hour\")\n",
+							")\n",
+							"\n",
+							"gold_traffic_features = (\n",
+							"    gold_traffic_city\n",
+							"    .withColumn(\n",
+							"        \"previous_traffic_index\",\n",
+							"        F.lag(\"avg_traffic_index\", 1).over(window_spec)\n",
+							"    )\n",
+							"    .withColumn(\n",
+							"        \"previous_jams_count\",\n",
+							"        F.lag(\"avg_jams_count\", 1).over(window_spec)\n",
+							"    )\n",
+							"    .withColumn(\n",
+							"        \"previous_mins_delay\",\n",
+							"        F.lag(\"avg_mins_delay\", 1).over(window_spec)\n",
+							"    )\n",
+							"    .withColumn(\n",
+							"        \"traffic_index_next_observation\",\n",
+							"        F.lead(\"avg_traffic_index\", 1).over(window_spec)\n",
+							"    )\n",
+							"    .withColumn(\n",
+							"        \"hour_of_day\",\n",
+							"        F.hour(\"observation_hour\")\n",
+							"    )\n",
+							"    .withColumn(\n",
+							"        \"day_of_week\",\n",
+							"        F.dayofweek(\"observation_hour\")\n",
+							"    )\n",
+							")\n",
+							"\n",
+							"display(gold_traffic_features.limit(20))"
+						],
+						"outputs": [],
+						"execution_count": 40
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### simpan gold sebagai delta"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"gold_city_path = f\"{gold_root}/traffic_city\"\n",
+							"\n",
+							"(\n",
+							"    gold_traffic_city.write\n",
+							"    .format(\"delta\")\n",
+							"    .mode(\"overwrite\")\n",
+							"    .option(\"overwriteSchema\", \"true\")\n",
+							"    .partitionBy(\"Country\")\n",
+							"    .save(gold_city_path)\n",
+							")\n",
+							"\n",
+							"gold_features_path = f\"{gold_root}/traffic_features\"\n",
+							"\n",
+							"(\n",
+							"    gold_traffic_features.write\n",
+							"    .format(\"delta\")\n",
+							"    .mode(\"overwrite\")\n",
+							"    .option(\"overwriteSchema\", \"true\")\n",
+							"    .partitionBy(\"Country\")\n",
+							"    .save(gold_features_path)\n",
+							")\n",
+							"\n",
+							"print(\"Gold berhasil disimpan.\")"
+						],
+						"outputs": [],
+						"execution_count": 41
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### optimize dan z-order gold"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"gold_paths = [\n",
+							"    gold_city_path,\n",
+							"    gold_features_path\n",
+							"]\n",
+							"\n",
+							"for path in gold_paths:\n",
+							"    try:\n",
+							"        spark.sql(\n",
+							"            f\"OPTIMIZE delta.`{path}` ZORDER BY (City)\"\n",
+							"        )\n",
+							"        print(\"Optimasi berhasil:\", path)\n",
+							"\n",
+							"    except Exception as e:\n",
+							"        print(\"Optimasi gagal atau tidak didukung:\", path)\n",
+							"        print(str(e)[:1000])"
+						],
+						"outputs": [],
+						"execution_count": 42
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### validasi hasil gold"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"gold_city_path = f\"{gold_root}/traffic_city\"\n",
+							"\n",
+							"df_gold_city_check = spark.read.format(\"delta\").load(gold_city_path)\n",
+							"\n",
+							"print(\"Total records Gold Traffic City:\", df_gold_city_check.count())\n",
+							"\n",
+							"df_gold_city_check.printSchema()\n",
+							"\n",
+							"display(df_gold_city_check.limit(10))\n",
+							"\n",
+							"display(\n",
+							"    df_gold_city_check.groupBy(\"Country\")\n",
+							"    .count()\n",
+							"    .orderBy(\"Country\")\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 44
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"gold_features_path = f\"{gold_root}/traffic_features\"\n",
+							"\n",
+							"df_gold_features_check = spark.read.format(\"delta\").load(gold_features_path)\n",
+							"\n",
+							"print(\"Total records Gold Traffic Features:\", df_gold_features_check.count())\n",
+							"\n",
+							"df_gold_features_check.printSchema()\n",
+							"\n",
+							"display(df_gold_features_check.limit(10))\n",
+							"\n",
+							"# Memeriksa ketersediaan fitur dan target prediksi\n",
+							"display(\n",
+							"    df_gold_features_check.select(\n",
+							"        F.count(\"*\").alias(\"total_records\"),\n",
+							"        F.count(\"previous_traffic_index\").alias(\"available_previous_index\"),\n",
+							"        F.count(\"traffic_index_next_observation\").alias(\"available_target\")\n",
+							"    )\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 45
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### stop session"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"mssparkutils.session.stop()"
+						],
+						"outputs": [],
+						"execution_count": 46
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/kelompoksyanpse')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 5
+				},
+				"autoScale": {
+					"enabled": false,
+					"maxNodeCount": 0,
+					"minNodeCount": 0
+				},
+				"nodeCount": 3,
+				"nodeSize": "Small",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.5",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": true,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastasia"
+		}
+	]
+}
