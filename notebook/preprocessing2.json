@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6f452098-802c-4098-83d9-1b6676248abc"
+				"spark.autotune.trackingId": "1265a738-5632-402e-8439-ca87c227694b"
 			}
 		},
 		"metadata": {
@@ -49,15 +49,99 @@
 		},
 		"cells": [
 			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Ekstraksi ZIP dan partisi"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"import os\n",
+					"import zipfile\n",
+					"from pyspark.sql import functions as F\n",
+					"\n",
+					"storage = \"adls1tcba\"\n",
+					"container = \"lakehouse\"\n",
+					"\n",
+					"# Path file ZIP\n",
+					"raw_zip_abfss = (\n",
+					"    f\"abfss://{container}@{storage}.dfs.core.windows.net/raw/tomtom_traffic.zip\"\n",
+					")\n",
+					"bronze_root = (\n",
+					"    f\"abfss://{container}@{storage}.dfs.core.windows.net/bronze/tomtom_partitioned\"\n",
+					")\n",
+					"\n",
+					"# Path sementara di local driver node Synapse\n",
+					"local_zip_path = \"/tmp/tomtom_traffic.zip\"\n",
+					"local_extract_dir = \"/tmp/tomtom_extracted\"\n",
+					"temp_csv_abfss = (\n",
+					"    f\"abfss://{container}@{storage}.dfs.core.windows.net/raw/temp_extracted_csv\"\n",
+					")\n",
+					"\n",
+					"# Salin file ZIP dari ADLS ke local driver Synapse menggunakan mssparkutils\n",
+					"mssparkutils.fs.cp(raw_zip_abfss, f\"file:{local_zip_path}\")\n",
+					"\n",
+					"# Ekstrak file ZIP di local driver\n",
+					"os.makedirs(local_extract_dir, exist_ok=True)\n",
+					"with zipfile.ZipFile(local_zip_path, \"r\") as z:\n",
+					"  z.extractall(local_extract_dir)\n",
+					"\n",
+					"# Upload hasil ekstrak CSV sementara ke ADLS agar bisa dibaca terdistribusi oleh Spark\n",
+					"mssparkutils.fs.cp(f\"file:{local_extract_dir}\", temp_csv_abfss, recurse=True)\n",
+					"\n",
+					"# Baca CSV, tambah kolom partisi year & month, lalu simpan sebagai Parquet di Bronze\n",
+					"df_raw_csv = (\n",
+					"    spark.read.option(\"header\", \"true\")\n",
+					"    .option(\"inferSchema\", \"true\")\n",
+					"    .csv(f\"{temp_csv_abfss}/*.csv\")\n",
+					")\n",
+					"\n",
+					"df_to_bronze = df_raw_csv.withColumn(\n",
+					"    \"year\", F.year(F.to_timestamp(\"LocalDateTime\", \"yyyy-MM-dd HH:mm:ss\"))\n",
+					").withColumn(\n",
+					"    \"month\", F.month(F.to_timestamp(\"LocalDateTime\", \"yyyy-MM-dd HH:mm:ss\"))\n",
+					")\n",
+					"\n",
+					"(\n",
+					"    df_to_bronze.write.format(\"parquet\")\n",
+					"    .mode(\n",
+					"        \"overwrite\"\n",
+					"    )  \n",
+					"    .partitionBy(\"year\", \"month\")\n",
+					"    .save(bronze_root)\n",
+					")\n",
+					"\n",
+					"import shutil\n",
+					"\n",
+					"# Bersihkan seluruh file sementara dan file mentah agar tersisa hasil partisi saja\n",
+					"os.remove(local_zip_path)  # Hapus ZIP di local driver\n",
+					"shutil.rmtree(\n",
+					"    local_extract_dir, ignore_errors=True\n",
+					"mssparkutils.fs.rm(\n",
+					"    temp_csv_abfss, recurse=True\n",
+					"mssparkutils.fs.rm(\n",
+					"    raw_zip_abfss\n",
+					")  \n",
+					"\n",
+					"print(\"Ekstraksi ZIP dan penulisan ke Bronze Parquet selesai!\")"
+				],
+				"execution_count": null
+			},
+			{
 				"cell_type": "code",
 				"source": [
 					"from pyspark.sql import functions as F\n",
 					"from pyspark.sql import types as T\n",
 					"from pyspark.sql.window import Window\n",
 					"from delta.tables import DeltaTable\n",
-					"\n",
-					"storage = \"adls1tcba\"\n",
-					"container = \"lakehouse\"\n",
 					"\n",
 					"# Sumber Parquet terpartisi\n",
 					"bronze_root = (f\"abfss://{container}@{storage}.dfs.core.windows.net/bronze/tomtom_partitioned\")\n",
