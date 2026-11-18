@@ -1,0 +1,30 @@
+{
+	"name": "Trigger_Mingguan_Traffic",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Pipeline_mingguan_tomtom",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Week",
+				"interval": 1,
+				"startTime": "2026-11-18T00:00:00",
+				"endTime": "2026-12-16T00:00:00",
+				"timeZone": "SE Asia Standard Time",
+				"schedule": {
+					"weekDays": [
+						"Sunday"
+					]
+				}
+			}
+		}
+	}
+}
