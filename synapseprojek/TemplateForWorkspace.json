@@ -22,6 +22,52 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/Pipeline_mingguan_tomtom')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Notebook1",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "preprocessing2",
+								"type": "NotebookReference"
+							},
+							"snapshot": true,
+							"sparkPool": {
+								"referenceName": "kelompoksyanpse",
+								"type": "BigDataPoolReference"
+							},
+							"executorSize": "Small",
+							"conf": {
+								"spark.dynamicAllocation.enabled": false
+							},
+							"driverSize": "Small"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/notebooks/preprocessing2')]",
+				"[concat(variables('workspaceId'), '/bigDataPools/kelompoksyanpse')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/synapseprojek-WorkspaceDefaultSqlServer')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -62,6 +108,42 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Trigger_Mingguan_Traffic')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Pipeline_mingguan_tomtom",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Week",
+						"interval": 1,
+						"startTime": "2026-11-18T00:00:00",
+						"endTime": "2026-12-16T00:00:00",
+						"timeZone": "SE Asia Standard Time",
+						"schedule": {
+							"weekDays": [
+								"Sunday"
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/Pipeline_mingguan_tomtom')]"
 			]
 		},
 		{
@@ -2679,7 +2761,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "3bb3ad29-1c2b-4a2c-b6d6-4ea9ff0a2da0"
+						"spark.autotune.trackingId": "941e4199-59fa-4471-bd42-da3db1c4e02e"
 					}
 				},
 				"metadata": {
@@ -2727,40 +2809,51 @@
 						"cell_type": "code",
 						"metadata": {},
 						"source": [
+							"import json\n",
 							"import os\n",
+							"import shutil\n",
 							"import zipfile\n",
 							"from pyspark.sql import functions as F\n",
 							"\n",
 							"storage = \"adls1tcba\"\n",
 							"container = \"lakehouse\"\n",
 							"\n",
-							"# Path file ZIP\n",
-							"raw_zip_abfss = (\n",
-							"    f\"abfss://{container}@{storage}.dfs.core.windows.net/raw/tomtom_traffic.zip\"\n",
+							"# Path konfigurasi & tujuan\n",
+							"kaggle_json_abfss = (\n",
+							"    f\"abfss://{container}@{storage}.dfs.core.windows.net/config/kaggle.json\"\n",
 							")\n",
 							"bronze_root = (\n",
 							"    f\"abfss://{container}@{storage}.dfs.core.windows.net/bronze/tomtom_partitioned\"\n",
 							")\n",
 							"\n",
-							"# Path sementara di local driver node Synapse\n",
-							"local_zip_path = \"/tmp/tomtom_traffic.zip\"\n",
-							"local_extract_dir = \"/tmp/tomtom_extracted\"\n",
+							"local_kaggle_dir = \"/root/.kaggle\"\n",
+							"local_download_dir = \"/tmp/kaggle_tomtom\"\n",
+							"\n",
+							"# 1. Ambil kredensial kaggle.json dari ADLS ke local driver Synapse\n",
+							"os.makedirs(local_kaggle_dir, exist_ok=True)\n",
+							"mssparkutils.fs.cp(kaggle_json_abfss, f\"file:{local_kaggle_dir}/kaggle.json\")\n",
+							"os.chmod(f\"{local_kaggle_dir}/kaggle.json\", 0o600)\n",
+							"\n",
+							"# 2. Download & otomatis ekstrak dataset TomTom dari Kaggle (ganti slug dataset sesuai URL Kaggle-nya)\n",
+							"import kaggle\n",
+							"\n",
+							"dataset_slug = (\n",
+							"    \"bwandowando/tomtom-traffic-data-55-countries-387-cities\"  # sesuaikan dengan slug URL Kaggle\n",
+							")\n",
+							"\n",
+							"os.makedirs(local_download_dir, exist_ok=True)\n",
+							"kaggle.api.authenticate()\n",
+							"kaggle.api.dataset_download_files(\n",
+							"    dataset_slug, path=local_download_dir, unzip=True\n",
+							")\n",
+							"\n",
+							"# 3. Pindahkan CSV hasil ekstrak sementara ke ADLS agar bisa dibaca terdistribusi oleh Spark\n",
 							"temp_csv_abfss = (\n",
 							"    f\"abfss://{container}@{storage}.dfs.core.windows.net/raw/temp_extracted_csv\"\n",
 							")\n",
+							"mssparkutils.fs.cp(f\"file:{local_download_dir}\", temp_csv_abfss, recurse=True)\n",
 							"\n",
-							"# Salin file ZIP dari ADLS ke local driver Synapse menggunakan mssparkutils\n",
-							"mssparkutils.fs.cp(raw_zip_abfss, f\"file:{local_zip_path}\")\n",
-							"\n",
-							"# Ekstrak file ZIP di local driver\n",
-							"os.makedirs(local_extract_dir, exist_ok=True)\n",
-							"with zipfile.ZipFile(local_zip_path, \"r\") as z:\n",
-							"  z.extractall(local_extract_dir)\n",
-							"\n",
-							"# Upload hasil ekstrak CSV sementara ke ADLS agar bisa dibaca terdistribusi oleh Spark\n",
-							"mssparkutils.fs.cp(f\"file:{local_extract_dir}\", temp_csv_abfss, recurse=True)\n",
-							"\n",
-							"# Baca CSV, tambah kolom partisi year & month, lalu simpan sebagai Parquet di Bronze\n",
+							"# 4. Baca CSV, tambah partisi year & month, simpan sebagai Parquet ke Bronze\n",
 							"df_raw_csv = (\n",
 							"    spark.read.option(\"header\", \"true\")\n",
 							"    .option(\"inferSchema\", \"true\")\n",
@@ -2775,26 +2868,18 @@
 							"\n",
 							"(\n",
 							"    df_to_bronze.write.format(\"parquet\")\n",
-							"    .mode(\n",
-							"        \"overwrite\"\n",
-							"    )  \n",
+							"    .mode(\"overwrite\")\n",
 							"    .partitionBy(\"year\", \"month\")\n",
 							"    .save(bronze_root)\n",
 							")\n",
 							"\n",
-							"import shutil\n",
+							"# 5. Bersihkan seluruh file lokal & folder temp ADLS agar tersisa hasil partisi saja\n",
+							"shutil.rmtree(local_download_dir, ignore_errors=True)\n",
+							"mssparkutils.fs.rm(temp_csv_abfss, recurse=True)\n",
 							"\n",
-							"# Bersihkan seluruh file sementara dan file mentah agar tersisa hasil partisi saja\n",
-							"os.remove(local_zip_path)  # Hapus ZIP di local driver\n",
-							"shutil.rmtree(\n",
-							"    local_extract_dir, ignore_errors=True\n",
-							"mssparkutils.fs.rm(\n",
-							"    temp_csv_abfss, recurse=True\n",
-							"mssparkutils.fs.rm(\n",
-							"    raw_zip_abfss\n",
-							")  \n",
-							"\n",
-							"print(\"Ekstraksi ZIP dan penulisan ke Bronze Parquet selesai!\")"
+							"print(\n",
+							"    \"Download Kaggle API, ekstraksi, dan partisi Bronze Parquet selesai\"\n",
+							")"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -3836,13 +3921,18 @@
 				},
 				"autoScale": {
 					"enabled": false,
-					"maxNodeCount": 0,
-					"minNodeCount": 0
+					"maxNodeCount": 3,
+					"minNodeCount": 3
 				},
 				"nodeCount": 3,
 				"nodeSize": "Small",
 				"nodeSizeFamily": "MemoryOptimized",
 				"sparkVersion": "3.5",
+				"libraryRequirements": {
+					"content": "kaggle",
+					"filename": "requirements.txt",
+					"time": "2026-11-18T13:20:05.4506223Z"
+				},
 				"isComputeIsolationEnabled": false,
 				"sessionLevelPackagesEnabled": true,
 				"annotations": []
